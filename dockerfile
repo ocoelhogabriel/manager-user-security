@@ -1,54 +1,24 @@
-# Usa a imagem base do OpenJDK 17 para build
-FROM eclipse-temurin:17-jdk-alpine as builder
+# Usa a imagem base do Tomcat 10 com OpenJDK 17
+FROM tomcat:10.1.0-jdk17
 
-# Define argumentos para versões
-ARG JAR_FILE=target/manager_user_security-1.0.0.jar
-ARG APP_NAME=manager_user_security
+# Define o diretório onde o Tomcat deploya as aplicações
+WORKDIR /usr/local/tomcat/webapps/
 
-# Cria um diretório para a aplicação
-WORKDIR /build
+# Copia o arquivo WAR da aplicação para o diretório webapps do Tomcat
+COPY ./target/manager_user_security.war ./manager_user_security.war
 
-# Copia o arquivo JAR da aplicação
-COPY ${JAR_FILE} app.jar
+#FROM eclipse-temurin:17-jdk-alpine
+#
+## Crie um diretório para a aplicação
+#WORKDIR /app
+#
+## Copie o arquivo .war para o container
+#COPY ./target/sirenev1.war /app/sirenev1.war
 
-# Extrai o JAR para otimizar as camadas Docker
-RUN mkdir -p extracted && \
-    java -Djarmode=layertools -jar app.jar extract --destination extracted
-
-# Usa imagem JRE para runtime (mais leve)
-FROM eclipse-temurin:17-jre-alpine as runtime
-
-# Cria um usuário não-root para executar a aplicação
-RUN addgroup -S spring && adduser -S spring -G spring
-
-# Cria diretórios para logs e configuração
-RUN mkdir -p /app/logs && \
-    mkdir -p /app/config && \
-    chown -R spring:spring /app
-
-WORKDIR /app
-
-# Copia as camadas da fase de build
-COPY --from=builder --chown=spring:spring /build/extracted/dependencies/ ./
-COPY --from=builder --chown=spring:spring /build/extracted/spring-boot-loader/ ./
-COPY --from=builder --chown=spring:spring /build/extracted/snapshot-dependencies/ ./
-COPY --from=builder --chown=spring:spring /build/extracted/application/ ./
-
-# Expõe a porta 8080 para a aplicação Spring Boot
+# Expor a porta 8080 para acessar o Tomcat
 EXPOSE 8080
 
-# Configura variáveis de ambiente para a JVM e para a aplicação
-ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
-ENV SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING="true"
-# Removendo a variável que permite referências circulares
-# ENV SPRING_MAIN_ALLOW_CIRCULAR_REFERENCES="true"
-
-# Configura Health Check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD wget -q --spider http://localhost:8080/manager_user_security/actuator/health || exit 1
-
-# Define o usuário não-root
-USER spring:spring
-
-# Executa a aplicação quando o container iniciar
-ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+# Executa o Tomcat na inicialização do container
+CMD ["catalina.sh", "run"]
+# Execute o .war usando Java
+#CMD ["java", "-jar", "/app/sirenev1.war"]

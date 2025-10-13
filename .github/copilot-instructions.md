@@ -1,138 +1,64 @@
-# 🤖 Copilot Instructions – Manager User Security Project Guide
+# Manager User Security - Copilot Instructions
 
-These instructions help AI coding agents understand this Spring Boot security and user management project's architecture, conventions, and developer workflows.
+This document provides essential knowledge for working with the Manager User Security project.
 
-The goal: make the AI instantly productive in this codebase with **context-aware guidance**.
+## Project Overview
 
----
+This is a Java-based Spring Boot application (v3.2.3) that provides user authentication and authorization services with JWT tokens. It's packaged as a WAR file and designed to run in Tomcat 10 with JDK 17.
 
-## 🧠 Project Overview
+## Architecture & Component Structure
 
-This project follows **clean architectural principles** with a focus on security and user management:
+- **Authentication**: JWT-based authentication system implemented in `JWTAuthFilter` and `SecurityConfig`
+- **API Structure**: RESTful controllers in `com.ocoelhogabriel.manager_user_security.controller` package 
+- **Security Model**: URL validation and permission checking through `URLValidator` and `PermissaoHandler`
+- **Spring Security**: Custom configuration with whitelist URLs in `SecurityConfig`
 
-```
-src/main/java/com/ocoelhogabriel/manager_user_security/
-├── application/     ← Application services and use cases
-├── config/          ← Security configurations (JWT, Web Security)
-├── controller/      ← REST API endpoints
-├── domain/          ← Domain entities and business logic
-├── exception/       ← Global exception handling
-├── handler/         ← Business logic handlers
-├── infrastructure/  ← External services implementation
-├── interfaces/      ← Interface definitions and API contracts
-└── utils/           ← Utility classes
-```
+## Key Files & Classes
 
-Key components:
-- JWT-based authentication
-- Role-based access control
-- User and profile management
-- Enterprise and plant management
-- Logging and monitoring
+- `SecurityConfig.java`: Core security configuration with filter chain setup
+- `JWTAuthFilter.java`: JWT token validation and authorization logic
+- `AuthenticationController.java`: API endpoints for authentication (/api/autenticacao/v1/*)
+- `Application.properties`: Contains database configs and JWT settings
 
----
+## Development Workflow
 
-## ⚙️ Developer Workflows
+### Building the Application
 
-### Build & Run
-```bash
-# Using Maven wrapper
-./mvnw spring-boot:run
+```shell
+# Using Maven Wrapper
+.\mvnw.cmd clean install
 
-# Using Docker
-docker compose up --build
+# Using Docker for local development
+docker-compose up -d
 ```
 
-### Testing
-```bash
-# Run all tests
-./mvnw test
+### Configuration Requirements
 
-# Run with code coverage
-./mvnw test jacoco:report
+- PostgreSQL database (default config: localhost:5432/silo with admin/admin credentials)
+- JWT secret key (configurable via environment variable JWT_SECRET)
 
-# Run specific test profile
-./mvnw test -P performance
-```
+## API Structure
 
-### Debugging
-- Use VS Code Spring Boot extension
-- Check `application.properties` for configuration
-- JWT and security settings in `SecurityConfig.java`
-- Database configurations via environment variables in docker-compose.yml
+- Base path: `/manager_user_security`
+- Authentication endpoints: `/api/autenticacao/v1/...`
+- Swagger documentation available at: `/swagger-ui/index.html`
 
----
+## Testing & Debugging
 
-## 🧩 Conventions & Patterns
+The application includes comprehensive JWT verification. When debugging authentication issues:
 
-### Controller Layer
-- Use `@RestController` for REST endpoints
-- Implement global exception handling via `GlobalExceptionHandler`
-- Follow REST naming conventions (`/api/v1/usuarios`, etc.)
-- Return standard response objects for consistency
+1. Check token validity with `/api/autenticacao/v1/validate`
+2. Examine `doFilterInternal` in `JWTAuthFilter.java` for permission validation steps
 
-### Security Patterns
-- JWT authentication filter in `JWTAuthFilter`
-- Custom security configurations in `SecurityConfig`
-- Role-based access control via Spring Security
-- Custom exception handling for auth failures
+## Docker Configuration
 
-### Domain Modeling
-- Use value objects for domain primitives (Email, Username)
-- Implement rich domain models with validation
-- Keep business rules in the domain layer
-- Use repositories for data access abstraction
+- Database: PostgreSQL 16 with custom performance tuning
+- Application: Tomcat 10 with JDK 17
+- Network: Both containers on the `dk-nt-silo` network
+- Port mapping: Application on 8092:8080, Database on 5455:5432
 
-### Service Layer
-- Transactional operations with `@Transactional`
-- Clear separation of authentication and business logic
-- Logging of security events and audit trails
-- Use DTOs for data transfer between layers
+## Conventions & Patterns
 
----
-
-## 🌐 Integrations & Dependencies
-
-### Core Dependencies
-- Spring Boot 3.2.0
-- Spring Security
-- JWT Authentication (Auth0)
-- JPA/Hibernate
-- PostgreSQL
-- Docker support
-- OpenAPI/Springdoc for API documentation
-
-### Database
-- PostgreSQL for production
-- H2 for testing
-- Connection pooling with HikariCP
-- Transaction management with Spring
-
-### Security Integration
-- JWT token management
-- Custom authentication endpoints
-- Role-based access control
-- Cross-Origin Resource Sharing (CORS) configuration
-
----
-
-## 🧭 Guidelines for AI Agents
-
-- Always maintain security best practices
-- Follow existing authentication patterns
-- Use proper exception handling for security events
-- Maintain audit logging where appropriate
-- Keep security configurations centralized
-- Follow REST API conventions established in controllers
-- Use existing security annotations and filters
-- Validate all user input thoroughly
-- Follow clean architecture principles:
-  - Domain layer should have no external dependencies
-  - Application services orchestrate use cases
-  - Infrastructure implements interfaces defined in domain
-  - Controllers should be thin and delegate to services
-
----
-
-**Last updated:** 2025-10-10  
-*Maintained collaboratively between human and AI agents.*
+- Controllers use versioned paths (e.g., `/api/{resource}/v1/...`)
+- Authentication responses use standardized DTOs (`ResponseAuthDTO`, `TokenValidationResponseDTO`)
+- Security whitelisting for Swagger UI and authentication endpoints

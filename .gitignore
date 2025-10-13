@@ -57,7 +57,4 @@ build/
 ### VS Code ###
 .vscode/
 
-# Temporary files directory
-temp/
-
 *.tar

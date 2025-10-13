@@ -4,125 +4,51 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: im-manager_user:1.0.0
-    container_name: dk-ct-manager_user-backend
+    image: im-silo:1.1.0
+    container_name: dk-ct-silo-backend
     ports:
       - "8092:8080"
     environment:
-      # Banco de dados
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/manager_user
-      - SPRING_DATASOURCE_USERNAME=manager_user
-      # Configuração de senha através de variável de ambiente ou arquivo de secrets
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-changeme}
-      # Chave JWT gerada aleatoriamente para cada ambiente
-      - APP_JWT_SECRET=${JWT_SECRET:-$(openssl rand -base64 32)}
-      # Configurações gerais
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/silo
+      - SPRING_DATASOURCE_USERNAME=silo
+      - SPRING_DATASOURCE_PASSWORD=silo
       - JPA_AUTO_DDL=update
       - TZ=America/Sao_Paulo
-      - SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING=true
-      # CORS configurado para domínios específicos
-      - CORS_ALLOWED_ORIGINS=https://frontend.example.com,https://admin.example.com
-      # Configurações de performance do Tomcat
-      - JAVA_OPTS=-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
-      - SERVER_TOMCAT_CONNECTION_TIMEOUT=20000
-      - SERVER_TOMCAT_MAX_HTTP_HEADER_SIZE=1048576
-      - SERVER_TOMCAT_MAX_SWALLOW_SIZE=20971520
-      - SERVER_TOMCAT_KEEP_ALIVE_TIMEOUT=20000
-      - SERVER_TOMCAT_THREADS_MAX=200
-      # Configurações de segurança
-      - SECURITY_REQUIRE_SSL=false # Deve ser true em produção, com certificado SSL configurado
-      - SPRING_SESSION_JDBC_INITIALIZE_SCHEMA=always
-    volumes:
-      - manager_user_logs:/app/logs
-      # Volume para secrets
-      - ./config:/app/config:ro
+      - CATALINA_OPTS=-Xms512m -Xmx1024m -Dserver.tomcat.connection-timeout=20000 -Dserver.tomcat.max-http-header-size=1048576 -Dserver.tomcat.max-swallow-size=20971520 -Dserver.tomcat.keep-alive-timeout=20000 -Dserver.tomcat.threads.max=200
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
-      - dk-nt-manager_user
+      - dk-nt-silo
     stop_grace_period: 60s
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/manager_user_security/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    # Limites de recursos para evitar sobrecarga
-    deploy:
-      resources:
-        limits:
-          cpus: '1.5'
-          memory: 1536M
-        reservations:
-          cpus: '0.5'
-          memory: 512M
-    # Políticas de segurança
-    security_opt:
-      - no-new-privileges:true
+    restart: always
 
   db:
     image: postgres:16
-    container_name: dk-ct-manager_user-db
-    restart: unless-stopped
+    container_name: dk-ct-silo-db
+    restart: always
     ports:
-      - "127.0.0.1:5455:5432" # Limitando acesso apenas ao localhost
+      - "5455:5432"
     environment:
-      POSTGRES_DB: manager_user
-      POSTGRES_USER: manager_user
-      # Senha gerada aleatoriamente ou especificada como variável de ambiente
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
-      POSTGRES_INITDB_ARGS: "--data-checksums"
+      POSTGRES_DB: silo
+      POSTGRES_USER: silo
+      POSTGRES_PASSWORD: silo
     volumes:
-      - manager_user_postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+      - silo_postgres_data:/var/lib/postgresql/data
     command: >
-      postgres -c max_connections=200 -c shared_buffers=256MB -c work_mem=4MB 
-      -c maintenance_work_mem=64MB -c effective_cache_size=768MB -c wal_buffers=16MB 
-      -c checkpoint_completion_target=0.7 -c synchronous_commit=on 
-      -c default_statistics_target=100 -c statement_timeout=60000 
-      -c idle_in_transaction_session_timeout=60000 -c log_statement=ddl
-      -c log_min_duration_statement=500 -c log_connections=on -c log_disconnections=on
+      postgres -c max_connections=200 -c shared_buffers=256MB -c work_mem=4MB -c maintenance_work_mem=64MB -c effective_cache_size=768MB -c wal_buffers=16MB -c checkpoint_completion_target=0.7 -c synchronous_commit=off -c default_statistics_target=100
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U manager_user"]
+      test: ["CMD-SHELL", "pg_isready -U silo"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
     networks:
-      - dk-nt-manager_user
-    # Limites de recursos para o banco de dados
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 256M
-    # Políticas de segurança
-    security_opt:
-      - no-new-privileges:true
+      - dk-nt-silo
 
 volumes:
-  manager_user_postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/docker-data/postgres
-  manager_user_logs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/docker-data/logs
+  silo_postgres_data:
 
 networks:
-  dk-nt-manager_user:
+  dk-nt-silo:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.0.0/24
+    driver_opts:
+      com.docker.network.driver.mtu: 1500

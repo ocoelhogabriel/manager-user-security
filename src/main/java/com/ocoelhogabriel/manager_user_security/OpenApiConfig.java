@@ -16,15 +16,15 @@ public class OpenApiConfig {
 
 	@Bean
 	GroupedOpenApi api() {
-		return GroupedOpenApi.builder().group("manager_user_security").pathsToMatch("/api/**").build();
+		return GroupedOpenApi.builder().group("silo-api").pathsToMatch("/api/**").build();
 	}
 
 	@Bean
 	OpenAPI myOpenAPI(BuildProperties env) {
 		String version = env.getVersion();
 		String name = env.getName();
-		logger.info("Info OpenApi Config, Name Package: {}, version - {}, Name: {}", env.getArtifact(), version, name);
+		logger.info("Info OpenApi Config, Name Package: " + env.getArtifact() + ", version - " + version + " - Name: " + name);
 
-		return new OpenAPI().info(new Info().title(name).version(version).description("Manager User Security API backend."));
+		return new OpenAPI().info(new Info().title(name).version(version).description("Silo API backend."));
 	}
 }
