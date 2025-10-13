@@ -1,9 +1,13 @@
-package com.ocoelhogabriel.manager_user_security.infrastructure.adapters.repositories;
+package com.ocoelhogabriel.manager_user_security.infrastructure.persistence;
 
-import com.ocoelhogabriel.manager_user_security.domain.entities.User;
-import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.*;
+import com.ocoelhogabriel.manager_user_security.domain.model.User;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.*;
+import com.ocoelhogabriel.manager_user_security.domain.ports.out.UserRepository;
+import com.ocoelhogabriel.manager_user_security.infrastructure.adapters.persistence.entities.Abrangencia;
+import com.ocoelhogabriel.manager_user_security.infrastructure.adapters.persistence.entities.Empresa;
+import com.ocoelhogabriel.manager_user_security.infrastructure.adapters.persistence.entities.Perfil;
 import com.ocoelhogabriel.manager_user_security.infrastructure.adapters.persistence.entities.Usuario;
+import com.ocoelhogabriel.manager_user_security.infrastructure.adapters.repositories.UsuarioJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -17,7 +21,7 @@ import java.util.stream.Collectors;
  * Driven Adapter that implements the UserRepository port.
  * This class adapts the domain's User entity to the persistence layer's Usuario JPA entity.
  */
-@Repository
+@Repository("userRepositoryAdapter")
 public class UserRepositoryImpl implements UserRepository {
 
     private final UsuarioJpaRepository jpaRepository;
@@ -54,17 +58,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(final Email email) {
-        // Assuming UsuarioJpaRepository has a findByEmail method.
-        // This method needs to be added to UsuarioJpaRepository: Optional<Usuario> findByEmail(String email);
-        return Optional.empty(); // Placeholder until the method is added
+        return jpaRepository.findByEmail(email.value()).map(UserMapper::toDomain);
     }
 
     @Override
     public PagedResult<User> findAllActive(final PageQuery query) {
         final PageRequest pageRequest = PageRequest.of(query.page(), query.size());
-        // Assuming UsuarioJpaRepository has a findByAtivo method.
-        // This method needs to be added: Page<Usuario> findByAtivo(boolean ativo, Pageable pageable);
-        final Page<Usuario> page = jpaRepository.findAll(pageRequest); // Placeholder
+        final Page<Usuario> page = jpaRepository.findByAtivo(true, pageRequest);
 
         final List<User> users = page.getContent().stream()
             .map(UserMapper::toDomain)
@@ -90,14 +90,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public long countActive() {
-        // Assuming UsuarioJpaRepository has a countByAtivo method.
-        // return jpaRepository.countByAtivo(true);
-        return jpaRepository.findAll().stream().filter(Usuario::isAtivo).count(); // Placeholder
+        return jpaRepository.countByAtivo(true);
     }
 
     private static class UserMapper {
 
         public static User toDomain(final Usuario entity) {
+            if (entity == null) return null;
             return User.builder()
                 .id(new UserId(entity.getId()))
                 .name(new Name(entity.getNome()))
@@ -105,6 +104,9 @@ public class UserRepositoryImpl implements UserRepository {
                 .username(new Username(entity.getUsername()))
                 .email(new Email(entity.getEmail()))
                 .password(new HashedPassword(entity.getPassword()))
+                .empresaId(entity.getEmpresa() != null ? new EmpresaId(entity.getEmpresa().getId()) : null)
+                .perfilId(entity.getPerfil() != null ? new PerfilId(entity.getPerfil().getId()) : null)
+                .abrangenciaId(entity.getAbrangencia() != null ? new AbrangenciaId(entity.getAbrangencia().getId()) : null)
                 .active(entity.isAtivo())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
@@ -118,13 +120,29 @@ public class UserRepositoryImpl implements UserRepository {
             entity.setEmail(domain.email().value());
             entity.setPassword(domain.password().value());
             entity.setAtivo(domain.isActive());
-            if (entity.getId() == null) { // Creation
+
+            if (domain.empresaId() != null) {
+                Empresa empresaReference = new Empresa();
+                empresaReference.setId(domain.empresaId().value());
+                entity.setEmpresa(empresaReference);
+            }
+
+            if (domain.perfilId() != null) {
+                Perfil perfilReference = new Perfil();
+                perfilReference.setId(domain.perfilId().value());
+                entity.setPerfil(perfilReference);
+            }
+
+            if (domain.abrangenciaId() != null) {
+                Abrangencia abrangenciaReference = new Abrangencia();
+                abrangenciaReference.setId(domain.abrangenciaId().value());
+                entity.setAbrangencia(abrangenciaReference);
+            }
+
+            if (!domain.hasId()) { // Creation
                 entity.setCreatedAt(domain.createdAt());
             }
             entity.setUpdatedAt(domain.updatedAt());
-            // Note: Other mandatory fields like 'empresa', 'perfil', 'abrangencia' are not set here.
-            // This will cause a persistence exception on creation.
-            // This must be handled by enriching the domain model further or setting defaults.
         }
     }
 }

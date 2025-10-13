@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.domain.value_objects;
+package com.ocoelhogabriel.manager_user_security.domain.model.value_objects;
 
 import com.ocoelhogabriel.manager_user_security.domain.constraints.MessageConstraints;
 import java.util.Objects;

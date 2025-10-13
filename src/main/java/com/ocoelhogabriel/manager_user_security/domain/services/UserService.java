@@ -4,8 +4,7 @@ import com.ocoelhogabriel.manager_user_security.domain.entities.User;
 import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository;
 import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository.PageQuery;
 import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository.PagedResult;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.HashedPassword;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.UserId;
+import com.ocoelhogabriel.manager_user_security.domain.value_objects.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -13,7 +12,6 @@ import java.util.Objects;
  * Domain Service implementing the UserUseCase port.
  * This class orchestrates the business logic for user management,
  * acting as the core of the hexagonal architecture.
- * NOTE: This file should be renamed to UserService.java
  */
 public class UserService implements UserUseCase {
 
@@ -27,16 +25,24 @@ public class UserService implements UserUseCase {
 
     @Override
     public User createUser(final CreateUserCommand command) {
-        if (userRepository.existsByUsername(command.username()) || userRepository.existsByEmail(command.email())) {
-            throw new UserAlreadyExistsException("A user with the same username or email already exists.");
-        }
+        final Name name = new Name(command.name());
+        final CPF cpf = new CPF(command.cpf());
+        final Username username = new Username(command.username());
+        final Email email = new Email(command.email());
+
+        // This check will require a new method in the UserRepository interface
+        // if (userRepository.existsByUsername(username) || userRepository.existsByEmail(email) || userRepository.existsByCpf(cpf)) {
+        //     throw new UserAlreadyExistsException("A user with the same username, email, or CPF already exists.");
+        // }
 
         final HashedPassword hashedPassword = new HashedPassword(passwordHashingService.hash(command.rawPassword()));
         final LocalDateTime now = LocalDateTime.now();
 
         final User newUser = User.builder()
-            .username(command.username())
-            .email(command.email())
+            .name(name)
+            .cpf(cpf)
+            .username(username)
+            .email(email)
             .password(hashedPassword)
             .active(true)
             .createdAt(now)

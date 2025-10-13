@@ -1,7 +1,7 @@
-package com.ocoelhogabriel.manager_user_security.domain.entities;
+package com.ocoelhogabriel.manager_user_security.domain.model;
 
 import com.ocoelhogabriel.manager_user_security.domain.constraints.MessageConstraints;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.*;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -18,6 +18,9 @@ public final class User {
     private final Username username;
     private final Email email;
     private final HashedPassword password;
+    private final EmpresaId empresaId;
+    private final PerfilId perfilId;
+    private final AbrangenciaId abrangenciaId;
     private final boolean active;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -29,6 +32,9 @@ public final class User {
         this.username = builder.username;
         this.email = builder.email;
         this.password = builder.password;
+        this.empresaId = builder.empresaId;
+        this.perfilId = builder.perfilId;
+        this.abrangenciaId = builder.abrangenciaId;
         this.active = builder.active;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -86,6 +92,18 @@ public final class User {
         return this.password;
     }
 
+    public EmpresaId empresaId() {
+        return this.empresaId;
+    }
+
+    public PerfilId perfilId() {
+        return this.perfilId;
+    }
+
+    public AbrangenciaId abrangenciaId() {
+        return this.abrangenciaId;
+    }
+
     public LocalDateTime createdAt() {
         return this.createdAt;
     }
@@ -119,6 +137,9 @@ public final class User {
             ", cpf=" + cpf +
             ", username=" + username +
             ", email=" + email +
+            ", empresaId=" + empresaId +
+            ", perfilId=" + perfilId +
+            ", abrangenciaId=" + abrangenciaId +
             ", password='[PROTECTED]'" +
             ", active=" + active +
             ", createdAt=" + createdAt +
@@ -133,6 +154,9 @@ public final class User {
         private Username username;
         private Email email;
         private HashedPassword password;
+        private EmpresaId empresaId;
+        private PerfilId perfilId;
+        private AbrangenciaId abrangenciaId;
         private boolean active;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
@@ -146,6 +170,9 @@ public final class User {
             this.username = user.username;
             this.email = user.email;
             this.password = user.password;
+            this.empresaId = user.empresaId;
+            this.perfilId = user.perfilId;
+            this.abrangenciaId = user.abrangenciaId;
             this.active = user.active;
             this.createdAt = user.createdAt;
             this.updatedAt = user.updatedAt;
@@ -179,6 +206,21 @@ public final class User {
 
         public UserBuilder password(HashedPassword password) {
             this.password = password;
+            return this;
+        }
+
+        public UserBuilder empresaId(EmpresaId empresaId) {
+            this.empresaId = empresaId;
+            return this;
+        }
+
+        public UserBuilder perfilId(PerfilId perfilId) {
+            this.perfilId = perfilId;
+            return this;
+        }
+
+        public UserBuilder abrangenciaId(AbrangenciaId abrangenciaId) {
+            this.abrangenciaId = abrangenciaId;
             return this;
         }
 
@@ -222,6 +264,18 @@ public final class User {
             if (Objects.isNull(password)) {
                 throw new IllegalArgumentException(MessageConstraints.MessageFormatter.format(
                     MessageConstraints.VALIDATION_REQUIRED_FIELD, "password"));
+            }
+            if (Objects.isNull(empresaId)) {
+                throw new IllegalArgumentException(MessageConstraints.MessageFormatter.format(
+                    MessageConstraints.VALIDATION_REQUIRED_FIELD, "empresaId"));
+            }
+            if (Objects.isNull(perfilId)) {
+                throw new IllegalArgumentException(MessageConstraints.MessageFormatter.format(
+                    MessageConstraints.VALIDATION_REQUIRED_FIELD, "perfilId"));
+            }
+            if (Objects.isNull(abrangenciaId)) {
+                throw new IllegalArgumentException(MessageConstraints.MessageFormatter.format(
+                    MessageConstraints.VALIDATION_REQUIRED_FIELD, "abrangenciaId"));
             }
             if (Objects.isNull(createdAt)) {
                 throw new IllegalArgumentException(MessageConstraints.MessageFormatter.format(

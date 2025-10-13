@@ -1,10 +1,10 @@
-package com.ocoelhogabriel.manager_user_security.domain.repositories;
+package com.ocoelhogabriel.manager_user_security.domain.ports.out;
 
-import com.ocoelhogabriel.manager_user_security.domain.entities.User;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.CPF;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.Email;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.UserId;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.Username;
+import com.ocoelhogabriel.manager_user_security.domain.model.User;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.CPF;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.Email;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.UserId;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.Username;
 import java.util.List;
 import java.util.Optional;
 

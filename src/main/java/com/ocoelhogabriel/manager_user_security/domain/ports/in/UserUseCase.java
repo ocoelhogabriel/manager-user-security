@@ -1,17 +1,15 @@
-package com.ocoelhogabriel.manager_user_security.domain.services;
+package com.ocoelhogabriel.manager_user_security.domain.ports.in;
 
-import com.ocoelhogabriel.manager_user_security.domain.entities.User;
-import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository.PageQuery;
-import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository.PagedResult;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.Email;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.UserId;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.Username;
+import com.ocoelhogabriel.manager_user_security.domain.model.User;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.Email;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.UserId;
+import com.ocoelhogabriel.manager_user_security.domain.ports.out.UserRepository.PageQuery;
+import com.ocoelhogabriel.manager_user_security.domain.ports.out.UserRepository.PagedResult;
 
 /**
  * Input Port defining the use cases for user management.
  * This interface is the entry point to the domain's core logic,
  * completely decoupled from web or persistence layers.
- * NOTE: This file should be renamed to UserUseCase.java
  */
 public interface UserUseCase {
 
@@ -19,11 +17,16 @@ public interface UserUseCase {
 
     /**
      * Command to create a new user.
+     * @param name The user's full name.
+     * @param cpf The user's CPF (Brazilian individual taxpayer registry).
      * @param username The desired username.
      * @param email The user's email.
      * @param rawPassword The user's raw, unhashed password.
+     * @param empresaId The ID of the company the user belongs to.
+     * @param perfilId The ID of the profile assigned to the user.
+     * @param abrangenciaId The ID of the scope assigned to the user.
      */
-    record CreateUserCommand(Username username, Email email, String rawPassword) {}
+    record CreateUserCommand(String name, String cpf, String username, String email, String rawPassword, Long empresaId, Long perfilId, Long abrangenciaId) {}
 
     /**
      * Command to update a user's email.
@@ -38,7 +41,7 @@ public interface UserUseCase {
      * Creates a new user.
      * @param command The command containing user data.
      * @return The newly created User entity.
-     * @throws UserAlreadyExistsException if a user with the same username or email already exists.
+     * @throws UserAlreadyExistsException if a user with the same username, email, or CPF already exists.
      */
     User createUser(CreateUserCommand command);
 

@@ -1,33 +1,20 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.web.controllers;
+package com.ocoelhogabriel.manager_user_security.infrastructure.web;
 
+import com.ocoelhogabriel.manager_user_security.domain.model.User;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.Email;
+import com.ocoelhogabriel.manager_user_security.domain.model.value_objects.UserId;
+import com.ocoelhogabriel.manager_user_security.domain.ports.in.UserUseCase;
+import com.ocoelhogabriel.manager_user_security.domain.ports.out.UserRepository.PageQuery;
+import com.ocoelhogabriel.manager_user_security.domain.ports.out.UserRepository.PagedResult;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ocoelhogabriel.manager_user_security.domain.entities.User;
-import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository.PageQuery;
-import com.ocoelhogabriel.manager_user_security.domain.repositories.UserRepository.PagedResult;
-import com.ocoelhogabriel.manager_user_security.domain.services.UserUseCase;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.Email;
-import com.ocoelhogabriel.manager_user_security.domain.value_objects.UserId;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Driving Adapter (Controller) for user management.
@@ -45,9 +32,9 @@ public class UsuarioController {
     }
 
     // --- DTOs for the API Layer ---
-    public record CreateUserRequest(String name, String cpf, String username, String email, String password) {}
+    public record CreateUserRequest(String name, String cpf, String username, String email, String password, Long empresaId, Long perfilId, Long abrangenciaId) {}
     public record UpdateEmailRequest(String newEmail) {}
-    public record UserResponse(UUID id, String name, String cpf, String username, String email, boolean active, LocalDateTime createdAt) {}
+    public record UserResponse(Long id, String name, String cpf, String username, String email, Long empresaId, Long perfilId, Long abrangenciaId, boolean active, LocalDateTime createdAt) {}
     public record ApiPagedResult<T>(List<T> items, long total) {}
 
     @PostMapping
@@ -60,7 +47,7 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Find a user by their ID")
-    public ResponseEntity<UserResponse> findUserById(@PathVariable final UUID id) {
+    public ResponseEntity<UserResponse> findUserById(@PathVariable final Long id) {
         final User user = userUseCase.findById(new UserId(id));
         return ResponseEntity.ok(UserApiMapper.toResponse(user));
     }
@@ -76,7 +63,7 @@ public class UsuarioController {
 
     @PatchMapping("/{id}/email")
     @Operation(summary = "Update a user's email")
-    public ResponseEntity<UserResponse> updateUserEmail(@PathVariable final UUID id, @RequestBody final UpdateEmailRequest request) {
+    public ResponseEntity<UserResponse> updateUserEmail(@PathVariable final Long id, @RequestBody final UpdateEmailRequest request) {
         final var command = new UserUseCase.UpdateEmailCommand(new UserId(id), new Email(request.newEmail()));
         final User updatedUser = userUseCase.updateEmail(command);
         return ResponseEntity.ok(UserApiMapper.toResponse(updatedUser));
@@ -85,7 +72,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Deactivate a user")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivateUser(@PathVariable final UUID id) {
+    public void deactivateUser(@PathVariable final Long id) {
         userUseCase.deactivateUser(new UserId(id));
     }
 
@@ -99,7 +86,10 @@ public class UsuarioController {
                 request.cpf(),
                 request.username(),
                 request.email(),
-                request.password()
+                request.password(),
+                request.empresaId(),
+                request.perfilId(),
+                request.abrangenciaId()
             );
         }
 
@@ -110,6 +100,9 @@ public class UsuarioController {
                 user.cpf().value(),
                 user.username().value(),
                 user.email().value(),
+                user.empresaId() != null ? user.empresaId().value() : null,
+                user.perfilId() != null ? user.perfilId().value() : null,
+                user.abrangenciaId() != null ? user.abrangenciaId().value() : null,
                 user.isActive(),
                 user.createdAt()
             );
