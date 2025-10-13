@@ -1,32 +1,73 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.security.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.Authentication;
 
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.CustomPermissionEvaluator;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.permission.CustomPermissionEvaluator;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.permission.CustomSecurityExpression;
 
 /**
- * Configuration class for method-level security
+ * Configuration for method security.
+ * This class configures the method security expression handler to use our custom permission evaluator.
  */
 @Configuration
 @EnableMethodSecurity
 public class MethodSecurityConfig {
 
-    @Autowired
-    private CustomPermissionEvaluator permissionEvaluator;
+    private final CustomPermissionEvaluator permissionEvaluator;
+
+    /**
+     * Constructor for MethodSecurityConfig.
+     * 
+     * @param permissionEvaluator the permission evaluator
+     */
+    public MethodSecurityConfig(CustomPermissionEvaluator permissionEvaluator) {
+        this.permissionEvaluator = permissionEvaluator;
+    }
+
+    /**
+     * Creates a method security expression handler.
+     * 
+     * @return the method security expression handler
+     */
+    @Bean
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new CustomMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(permissionEvaluator);
+        expressionHandler.setTrustResolver(trustResolver());
+        return expressionHandler;
+    }
     
     /**
-     * Configure method security expression handler
+     * Creates an authentication trust resolver.
      * 
-     * @return The configured method security expression handler
+     * @return the authentication trust resolver
      */
-    protected MethodSecurityExpressionHandler createExpressionHandler() {
-        DefaultMethodSecurityExpressionHandler expressionHandler = 
-                new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(permissionEvaluator);
-        return expressionHandler;
+    @Bean
+    public AuthenticationTrustResolver trustResolver() {
+        return new AuthenticationTrustResolverImpl();
+    }
+    
+    /**
+     * Custom method security expression handler that uses our CustomSecurityExpression.
+     */
+    private static class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
+        @Override
+        protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
+            CustomSecurityExpression root = new CustomSecurityExpression(authentication);
+            root.setPermissionEvaluator(getPermissionEvaluator());
+            root.setTrustResolver(getTrustResolver());
+            root.setRoleHierarchy(getRoleHierarchy());
+            root.setThis(invocation.getThis());
+            return root;
+        }
     }
 }

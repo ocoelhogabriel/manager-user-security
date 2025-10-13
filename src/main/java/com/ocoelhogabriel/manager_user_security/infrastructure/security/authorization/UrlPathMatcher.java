@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.valueobject.HttpMethod;
 
 /**

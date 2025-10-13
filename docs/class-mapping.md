@@ -79,3 +79,21 @@ com.ocoelhogabriel.manager_user_security/
 | - | `com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.ResourceEntity` | Entidade JPA para recurso |
 | `com.ocoelhogabriel.manager_user_security.model.entity.Perfil` | `com.ocoelhogabriel.manager_user_security.domain.entity.Role` | Entidade de domínio para perfil |
 | - | `com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity` | Entidade JPA para perfil |
+
+## Componentes Removidos do Escopo
+
+A seguinte tabela lista os componentes que foram removidos do escopo do projeto conforme decisão da equipe:
+
+| Classe Antiga | Motivo de Remoção |
+|---------------|-------------------|
+| `com.ocoelhogabriel.manager_user_security.model.SiloModel` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.model.SiloModuloModel` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.model.TipoSiloModel` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.model.MedicaoModel` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.model.PendenciaModel` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.repository.SiloRepository` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.repository.SiloModuloRepository` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.repository.TipoSiloRepository` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.repository.MedicaoRepository` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.repository.PendenciaRepository` | Funcionalidade não requerida na nova implementação |
+| `com.ocoelhogabriel.manager_user_security.repository.FirmwareRepository` | Funcionalidade não requerida na nova implementação |

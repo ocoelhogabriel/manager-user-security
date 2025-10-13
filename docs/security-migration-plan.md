@@ -10,9 +10,9 @@ Este documento descreve o plano para migrar os componentes de segurança da estr
 
 ## Fase 2: Migração de Dados (Em Andamento)
 
-- [ ] Criar implementações concretas para os serviços de domínio
-- [ ] Implementar mapeadores entre entidades antigas e novas
-- [ ] Configurar repositórios para trabalhar com novas entidades
+- [x] Criar implementações concretas para os serviços de domínio
+- [x] Implementar mapeadores entre entidades antigas e novas
+- [x] Configurar repositórios para trabalhar com novas entidades
 
 ## Fase 3: Substituição Gradual (Pendente)
 

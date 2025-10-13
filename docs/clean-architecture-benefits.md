@@ -91,6 +91,101 @@ A nova arquitetura segue os princípios de Clean Architecture, com as seguintes 
 
 ## Exemplos Concretos de Melhorias
 
+### Gestão de Escopo de Acesso (Coverage)
+
+**Antes**:
+```java
+// AbrangenciaModel - Misturando dados e regras de negócio com detalhes de persistência
+@Entity
+@Table(name = "abrangencia")
+public class AbrangenciaModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+    
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private EmpresaModel empresa;
+    
+    // Validações e lógica de negócio misturadas com JPA
+    public boolean validarAcesso() {
+        return usuario != null && empresa != null && ativo;
+    }
+    
+    // Sem separação de responsabilidades
+}
+```
+
+**Agora**:
+```java
+// Entidade de domínio pura com regras de negócio bem definidas
+public class Coverage {
+    private final Long id;
+    private final User user;
+    private final Company company;
+    private final Plant plant;
+    private final String description;
+    private final boolean active;
+    
+    private Coverage(Builder builder) {
+        // Construção via Builder pattern
+        this.id = builder.id;
+        this.user = builder.user;
+        this.company = builder.company;
+        this.plant = builder.plant;
+        this.description = builder.description;
+        this.active = builder.active;
+    }
+    
+    public static Builder builder() {
+        return new Builder();
+    }
+    
+    // Builder com validações de regras de negócio
+    public static class Builder {
+        // Builder implementation
+        
+        public Coverage build() {
+            validateRequiredFields();
+            return new Coverage(this);
+        }
+        
+        private void validateRequiredFields() {
+            if (user == null) {
+                throw new IllegalArgumentException("User is required for Coverage");
+            }
+            
+            if (company == null) {
+                throw new IllegalArgumentException("Company is required for Coverage");
+            }
+        }
+    }
+}
+
+// Entidade de persistência separada
+@Entity
+@Table(name = "abrangencia")
+public class CoverageEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UserEntity user;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empresa_id", nullable = false)
+    private CompanyEntity company;
+    
+    // Detalhes de persistência
+}
+```
+
 ### Autenticação e Autorização
 
 **Antes**:

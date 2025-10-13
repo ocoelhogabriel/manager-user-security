@@ -1,54 +1,52 @@
 package com.ocoelhogabriel.manager_user_security.domain.service;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
+import java.util.Optional;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
-import com.ocoelhogabriel.manager_user_security.domain.valueobject.TokenDetails;
 
 /**
- * Service interface for authentication operations
+ * Service interface for authentication operations.
+ * This interface defines the contract for authenticating users.
  */
-public interface AuthenticationService extends UserDetailsService {
+public interface AuthenticationService {
     
     /**
-     * Generate a token for a user
-     * 
-     * @param username The username
-     * @param password The password
-     * @return TokenDetails containing the generated token
+     * Authenticates a user with username and password.
+     *
+     * @param username the username of the user to authenticate
+     * @param password the password of the user to authenticate
+     * @return an Optional containing the authenticated user, or empty if authentication failed
      */
-    TokenDetails generateToken(String username, String password);
+    Optional<User> authenticate(String username, String password);
     
     /**
-     * Validate a token
-     * 
-     * @param token The token to validate
-     * @return The username from the token
+     * Validates authentication credentials.
+     *
+     * @param token the authentication token to validate
+     * @return an Optional containing the user associated with the token, or empty if validation failed
      */
-    String validateToken(String token);
+    Optional<User> validateToken(String token);
     
     /**
-     * Refresh an expired token
-     * 
-     * @param token The expired token
-     * @return TokenDetails containing the new token
+     * Generates a new authentication token for a user.
+     *
+     * @param user the user to generate a token for
+     * @return the generated authentication token
      */
-    TokenDetails refreshToken(String token);
+    String generateToken(User user);
     
     /**
-     * Validate and parse a token
-     * 
-     * @param token The token to validate and parse
-     * @return TokenDetails containing the token information
+     * Refreshes an authentication token.
+     *
+     * @param token the token to refresh
+     * @return an Optional containing the new token, or empty if the token couldn't be refreshed
      */
-    TokenDetails validateAndParseToken(String token);
+    Optional<String> refreshToken(String token);
     
     /**
-     * Authenticate a user
-     * 
-     * @param username The username
-     * @param password The password
-     * @return The authenticated user
+     * Invalidates an authentication token.
+     *
+     * @param token the token to invalidate
      */
-    User authenticate(String username, String password);
+    void invalidateToken(String token);
 }

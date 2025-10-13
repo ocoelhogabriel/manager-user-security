@@ -1,95 +1,102 @@
 package com.ocoelhogabriel.manager_user_security.domain.entity;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Collections;
+
 /**
- * Permission entity representing permissions for a role on a specific resource
+ * Permission domain entity representing a permission in the system.
+ * Permissions are used to control access to resources.
  */
 public class Permission {
-    private String id;
-    private Role role;
-    private Resource resource;
-    private boolean canList;
-    private boolean canRead;
-    private boolean canCreate;
-    private boolean canEdit;
-    private boolean canDelete;
-    
-    public Permission() {
-    }
-    
-    public Permission(String id, Role role, Resource resource, 
-                     boolean canList, boolean canRead, boolean canCreate, 
-                     boolean canEdit, boolean canDelete) {
-        this.id = id;
-        this.role = role;
+    private final UUID id;
+    private String resource;
+    private Set<String> actions;
+
+    /**
+     * Creates a new Permission with the specified resource and action.
+     *
+     * @param resource the resource name
+     * @param action the action to be performed on the resource
+     */
+    public Permission(String resource, String action) {
+        this.id = UUID.randomUUID();
         this.resource = resource;
-        this.canList = canList;
-        this.canRead = canRead;
-        this.canCreate = canCreate;
-        this.canEdit = canEdit;
-        this.canDelete = canDelete;
+        this.actions = new HashSet<>();
+        this.actions.add(action);
     }
 
-    public String getId() {
+    /**
+     * Creates a Permission with an existing ID.
+     *
+     * @param id the ID of the permission
+     * @param resource the resource name
+     * @param actions the actions that can be performed on the resource
+     */
+    public Permission(UUID id, String resource, Set<String> actions) {
+        this.id = id;
+        this.resource = resource;
+        this.actions = actions != null ? new HashSet<>(actions) : new HashSet<>();
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Resource getResource() {
+    public String getResource() {
         return resource;
     }
 
-    public void setResource(Resource resource) {
+    public void setResource(String resource) {
         this.resource = resource;
     }
 
-    public boolean canList() {
-        return canList;
+    public Set<String> getActions() {
+        return Collections.unmodifiableSet(actions);
     }
 
-    public void setCanList(boolean canList) {
-        this.canList = canList;
+    /**
+     * Adds an action to the permission.
+     *
+     * @param action the action to add
+     * @return true if the action was added, false if it was already present
+     */
+    public boolean addAction(String action) {
+        return actions.add(action);
     }
 
-    public boolean canRead() {
-        return canRead;
+    /**
+     * Removes an action from the permission.
+     *
+     * @param action the action to remove
+     * @return true if the action was removed, false if it was not present
+     */
+    public boolean removeAction(String action) {
+        return actions.remove(action);
     }
 
-    public void setCanRead(boolean canRead) {
-        this.canRead = canRead;
+    /**
+     * Checks if the permission has a specific action.
+     *
+     * @param action the action to check
+     * @return true if the permission has the action, false otherwise
+     */
+    public boolean hasAction(String action) {
+        return actions.contains(action);
     }
 
-    public boolean canCreate() {
-        return canCreate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Permission that = (Permission) o;
+        return Objects.equals(id, that.id);
     }
 
-    public void setCanCreate(boolean canCreate) {
-        this.canCreate = canCreate;
-    }
-
-    public boolean canEdit() {
-        return canEdit;
-    }
-
-    public void setCanEdit(boolean canEdit) {
-        this.canEdit = canEdit;
-    }
-
-    public boolean canDelete() {
-        return canDelete;
-    }
-
-    public void setCanDelete(boolean canDelete) {
-        this.canDelete = canDelete;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

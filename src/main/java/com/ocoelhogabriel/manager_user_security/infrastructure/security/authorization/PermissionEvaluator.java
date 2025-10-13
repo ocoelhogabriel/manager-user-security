@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.domain.service.ResourceService;
 import com.ocoelhogabriel.manager_user_security.domain.service.RolePermissionService;

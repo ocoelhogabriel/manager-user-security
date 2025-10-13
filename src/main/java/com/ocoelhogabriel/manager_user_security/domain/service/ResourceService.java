@@ -1,6 +1,6 @@
 package com.ocoelhogabriel.manager_user_security.domain.service;
 
-import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 
 /**
  * Service interface for managing resources
@@ -8,10 +8,10 @@ import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 public interface ResourceService {
     
     /**
-     * Find a resource by its name
+     * Find resource by name
      * 
      * @param name The resource name
-     * @return The found resource
+     * @return The resource with the given name
      */
     Resource findByName(String name);
 }

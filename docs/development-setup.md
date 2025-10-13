@@ -156,9 +156,9 @@ O projeto suporta vários perfis Spring para diferentes ambientes:
 
 - `dev` - Configurações para desenvolvimento local
 - `test` - Configurações para execução de testes
-- `clean` - Nova implementação com Clean Architecture
-- `dev-clean` - Desenvolvimento com nova arquitetura
 - `prod` - Configurações de produção
+
+> **Nota**: Com a migração para Clean Architecture, o projeto agora usa o pacote `com.ocoelhogabriel.usersecurity` como implementação principal. O perfil `clean` foi descontinuado.
 
 ### Ativando Perfis
 
@@ -194,7 +194,7 @@ docker-compose -f docker-compose.yml -f docker-compose.clean.yml up -d
 
 A documentação da API está disponível em:
 - Implementação original: `http://localhost:8092/manager_user_security/swagger-ui/index.html`
-- Nova implementação: `http://localhost:8092/manager_user_security/swagger-ui/index.html?configUrl=/manager_user_security/v3/api-docs/swagger-config-clean`
+- Nova implementação: `http://localhost:8092/usersecurity/swagger-ui/index.html`
 
 ## Monitoramento e Atuadores
 
@@ -221,7 +221,7 @@ http://localhost:8092/manager_user_security/actuator
 **Solução**:
 1. Verifique se o token não expirou
 2. Confirme se a variável de ambiente `JWT_SECRET` está configurada corretamente
-3. Teste com o endpoint `/api/autenticacao/v1/validate` para validar o token
+3. Teste com o endpoint `/api/auth/v1/validate` para validar o token
 
 ### Erros de Build Maven
 

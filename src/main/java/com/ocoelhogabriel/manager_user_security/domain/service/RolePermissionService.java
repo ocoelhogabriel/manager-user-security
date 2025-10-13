@@ -1,8 +1,8 @@
 package com.ocoelhogabriel.manager_user_security.domain.service;
 
-import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
-import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Permission;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 
 /**
  * Service interface for managing role permissions

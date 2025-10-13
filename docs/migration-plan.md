@@ -8,11 +8,13 @@ A migração está em andamento, com a seguinte distribuição de progresso por 
 
 - ✅ **Framework de Segurança**: Os componentes principais de segurança e autenticação foram implementados na nova estrutura.
 - ✅ **Entidades de Domínio Core**: As entidades principais (User, Role, Permission, Resource) foram implementadas.
-- ✅ **Persistência Core**: Entidades JPA, repositórios e mapeadores para componentes principais foram implementados.
+- ✅ **Entidades Específicas de Negócio**: As entidades específicas (Company, Plant, Logger) foram implementadas.
+- ✅ **Persistência Core**: Entidades JPA, repositórios e mapeadores para componentes principais e específicos foram implementados.
 - ✅ **Serviços Core**: Os serviços principais de autenticação, autorização e gerenciamento de permissões foram implementados.
-- ❌ **Interfaces da API**: Controladores REST e DTOs específicos ainda precisam ser implementados.
-- ❌ **Entidades Específicas de Negócio**: Entidades específicas como Empresa, Planta, Silo, etc. ainda precisam ser migradas.
-- ❌ **Implementação de Casos de Uso Específicos**: Casos de uso específicos de negócio ainda precisam ser implementados.
+- ✅ **Repositórios**: Interfaces de repositório e implementações JPA para User, Role, Permission, Resource, Company, Plant e Logger foram implementadas.
+- ✅ **Interfaces da API**: Controladores REST para autenticação e gerenciamento de recursos foram implementados (AuthenticationController, UserController, RoleController, ResourceController, CompanyController, PlantController, LoggerController).
+- ✅ **DTOs de API**: DTOs para as interfaces da API foram implementados (Authentication, User, Role, Resource, Company, Plant, Logger).
+- ✅ **Implementação de Casos de Uso**: Casos de uso para componentes principais foram implementados (AuthenticationUseCase, CompanyUseCase, PlantUseCase, LoggerUseCase).
 
 ## Estratégia de Migração
 
@@ -34,9 +36,10 @@ Estamos seguindo uma abordagem gradual, onde:
 - ✅ Implementação do framework de exceções
 
 #### Fase 2: Componentes Específicos de Negócio (Em Andamento)
-- ⏳ Implementação das entidades de domínio específicas
+- ✅ Implementação das entidades de domínio específicas (Company, Plant, Logger)
+- ✅ Implementação dos repositórios específicos de negócio
 - ⏳ Implementação dos casos de uso específicos
-- ⏳ Implementação das interfaces da API
+- ⏳ Implementação das interfaces da API completas
 
 #### Fase 3: Transição e Integração (Pendente)
 - ❌ Testes de integração completos
@@ -51,23 +54,27 @@ Estamos seguindo uma abordagem gradual, onde:
 
 ## Tarefas Imediatas Recomendadas
 
-1. **Implementar controladores REST principais**:
-   - AuthenticationController
-   - UserController
-   - RoleController
-   - ResourceController
+> **Nota**: As tarefas relacionadas a Silo, SiloType, Medicao, Firmware e Pendencias foram removidas do escopo do projeto conforme decisão da equipe.
 
-2. **Criar DTOs para interfaces da API**:
-   - DTOs para autenticação
-   - DTOs para gerenciamento de usuários
-   - DTOs para gerenciamento de perfis
-   - DTOs para gerenciamento de recursos
+1. **Implementar testes unitários e de integração**:
+   - Testes para os controladores REST
+   - Testes para casos de uso
+   - Testes para serviços de aplicação
+   - Testes para repositórios
 
-3. **Iniciar a implementação das entidades de domínio específicas**:
-   - Empresa/Company
-   - Planta/Plant
-   - Silo e TipoSilo
-   - SiloModulo
+2. **Refinar a documentação da API**:
+   - Melhorar anotações OpenAPI/Swagger
+   - Documentar exemplos de requisições e respostas
+   - Atualizar documentação de endpoints
+
+3. **Desenvolver estratégia de migração de dados**:
+   - Criar scripts de migração para dados existentes
+   - Implementar procedimento de backup/rollback
+
+4. **Configurar monitoramento e logging**:
+   - Implementar logging estruturado
+   - Configurar monitoramento de performance
+   - Configurar alertas para erros críticos
 
 ## Desafios e Considerações
 
@@ -99,6 +106,23 @@ Estamos seguindo uma abordagem gradual, onde:
 
 O progresso da migração será monitorado através do arquivo `project-mapping.md`, que será atualizado regularmente para refletir o estado atual da migração.
 
+## Decisões de Escopo
+
+### Componentes Removidos do Escopo
+
+Após análise de requisitos e discussão com a equipe, os seguintes componentes foram removidos do escopo do projeto:
+
+- **Silo**: Entidades, repositórios, serviços e controladores relacionados a silos
+- **SiloType (TipoSilo)**: Classificação e tipos de silos
+- **SiloModule (ModuloSilo)**: Módulos de silos e sua gestão
+- **Medicao (Measurement)**: Medições relacionadas a silos
+- **Pendencia (Pendency)**: Pendências no sistema
+- **Firmware**: Gerenciamento de firmwares
+
+Esta decisão foi tomada para focar o desenvolvimento nos componentes core de segurança e gerenciamento de usuários, empresas, plantas e logs, simplificando a migração e reduzindo o escopo inicial do projeto.
+
 ## Conclusão
 
-A migração está em bom progresso, com os componentes core já implementados. O foco agora deve ser na implementação dos componentes específicos de negócio e interfaces da API, seguindo a estrutura e padrões estabelecidos para a nova arquitetura.
+A migração está em fase avançada, com todos os componentes core e a maioria dos componentes específicos de negócio já implementados. O foco atual está em finalizar os testes, refinar a documentação, e preparar a estratégia de migração de dados para uma transição completa para a nova arquitetura.
+
+A arquitetura Clean Architecture adotada tem demonstrado benefícios em termos de organização do código, separação de responsabilidades e facilidade de teste. O projeto está bem estruturado e pronto para as fases finais de desenvolvimento e implantação.
