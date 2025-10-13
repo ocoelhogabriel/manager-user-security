@@ -1,0 +1,14 @@
+Relatório de Verificação de Linhas em Branco em Arquivos Markdown
+Gerado em: 10/12/2025 08:50:32
+=============================================================
+
+Total de arquivos encontrados: 17
+
+Arquivos corrigidos:
+-------------------
+
+Resumo:
+-------
+Total de arquivos: 17
+Arquivos corrigidos: 0
+Arquivos já corretos: 17
