@@ -2,15 +2,13 @@ package com.ocoelhogabriel.usersecurity.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 import com.ocoelhogabriel.usersecurity.domain.entity.Permission;
 
 /**
  * Repository interface for Permission entities.
  * Extends the generic Repository interface with Permission-specific methods.
  */
-public interface PermissionRepository extends Repository<Permission, UUID> {
+public interface PermissionRepository extends Repository<Permission, Long> {
     
     /**
      * Finds permissions by resource.

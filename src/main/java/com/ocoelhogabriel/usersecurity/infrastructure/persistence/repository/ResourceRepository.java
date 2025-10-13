@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ocoelhogabriel.usersecurity.domain.entity.Resource;
+import com.ocoelhogabriel.usersecurity.infrastructure.persistence.entity.ResourceEntity;
 
 /**
- * Repository for managing Resource entities.
+ * Repository for managing ResourceEntity entities.
  */
 @Repository
-public interface ResourceRepository extends JpaRepository<Resource, Long> {
+public interface ResourceRepository extends JpaRepository<ResourceEntity, Long> {
 
     /**
      * Find a resource by its path and HTTP method.
@@ -23,7 +23,15 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
      * @param method the HTTP method
      * @return the resource, if found
      */
-    Optional<Resource> findByPathAndMethod(String path, String method);
+    Optional<ResourceEntity> findByPathAndMethod(String path, String method);
+    
+    /**
+     * Find a resource by name.
+     *
+     * @param name the name of the resource
+     * @return the resource, if found
+     */
+    Optional<ResourceEntity> findByName(String name);
     
     /**
      * Find a resource by its path and HTTP method, excluding a specific ID.

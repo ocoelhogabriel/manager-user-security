@@ -6,13 +6,13 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.ocoelhogabriel.usersecurity.domain.entity.Role;
+import com.ocoelhogabriel.usersecurity.infrastructure.persistence.entity.RoleEntity;
 
 /**
- * Repository for managing Role entities.
+ * Repository for managing RoleEntity entities.
  */
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     /**
      * Find a role by its name.
@@ -20,7 +20,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @param name the role name
      * @return the role, if found
      */
-    Optional<Role> findByName(String name);
+    Optional<RoleEntity> findByName(String name);
     
     /**
      * Find a role by name, excluding a specific ID.
@@ -29,7 +29,15 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @param id the ID to exclude
      * @return the role, if found
      */
-    Optional<Role> findByNameAndIdNot(String name, Long id);
+    Optional<RoleEntity> findByNameAndIdNot(String name, Long id);
+    
+    /**
+     * Check if a role exists with the given name.
+     *
+     * @param name the name to check
+     * @return true if a role exists with the given name, false otherwise
+     */
+    boolean existsByName(String name);
     
     /**
      * Find roles by user ID.
@@ -37,5 +45,5 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @param userId the user ID
      * @return list of roles
      */
-    List<Role> findByUsersId(Long userId);
+    List<RoleEntity> findByUsersId(Long userId);
 }

@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ocoelhogabriel.usersecurity.domain.entity.Permission;
+import com.ocoelhogabriel.usersecurity.infrastructure.persistence.entity.PermissionEntity;
 
 /**
  * Repository for managing Permission entities.
  */
 @Repository
-public interface PermissionRepository extends JpaRepository<Permission, Long> {
+public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
 
     /**
      * Find permissions by role ID.
@@ -22,7 +22,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
      * @param roleId the role ID
      * @return the permissions
      */
-    List<Permission> findByRoleId(Long roleId);
+    List<PermissionEntity> findByRoleId(Long roleId);
     
     /**
      * Find permissions by resource ID.
@@ -30,7 +30,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
      * @param resourceId the resource ID
      * @return the permissions
      */
-    List<Permission> findByResourceId(Long resourceId);
+    List<PermissionEntity> findByResourceId(Long resourceId);
     
     /**
      * Find a permission by role ID and resource ID.
@@ -39,7 +39,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
      * @param resourceId the resource ID
      * @return the permission, if found
      */
-    Optional<Permission> findByRoleIdAndResourceId(Long roleId, Long resourceId);
+    Optional<PermissionEntity> findByRoleIdAndResourceId(Long roleId, Long resourceId);
     
     /**
      * Find a permission by role IDs and resource IDs.
@@ -48,8 +48,8 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
      * @param resourceIds the resource IDs
      * @return the permission, if found
      */
-    @Query("SELECT p FROM Permission p WHERE p.role.id IN :roleIds AND p.resource.id IN :resourceIds")
-    Optional<Permission> findByRoleIdInAndResourceIdIn(
+    @Query("SELECT p FROM PermissionEntity p WHERE p.role.id IN :roleIds AND p.resource.id IN :resourceIds")
+    Optional<PermissionEntity> findByRoleIdInAndResourceIdIn(
             @Param("roleIds") List<Long> roleIds, 
             @Param("resourceIds") List<Long> resourceIds);
     

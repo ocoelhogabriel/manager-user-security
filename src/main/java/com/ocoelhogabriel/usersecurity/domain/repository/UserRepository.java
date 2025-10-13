@@ -1,7 +1,6 @@
 package com.ocoelhogabriel.usersecurity.domain.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import com.ocoelhogabriel.usersecurity.domain.entity.User;
 
@@ -9,7 +8,7 @@ import com.ocoelhogabriel.usersecurity.domain.entity.User;
  * Repository interface for User entities.
  * Extends the generic Repository interface with User-specific methods.
  */
-public interface UserRepository extends Repository<User, UUID> {
+public interface UserRepository extends Repository<User, Long> {
     
     /**
      * Finds a user by username.

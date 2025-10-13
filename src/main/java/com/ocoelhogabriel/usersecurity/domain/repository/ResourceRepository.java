@@ -2,7 +2,6 @@ package com.ocoelhogabriel.usersecurity.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.ocoelhogabriel.usersecurity.domain.entity.Resource;
 
@@ -10,7 +9,7 @@ import com.ocoelhogabriel.usersecurity.domain.entity.Resource;
  * Repository interface for Resource entities.
  * Extends the generic Repository interface with Resource-specific methods.
  */
-public interface ResourceRepository extends Repository<Resource, UUID> {
+public interface ResourceRepository extends Repository<Resource, Long> {
     
     /**
      * Finds a resource by name.

@@ -1,7 +1,6 @@
 package com.ocoelhogabriel.usersecurity.domain.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import com.ocoelhogabriel.usersecurity.domain.entity.Role;
 
@@ -9,7 +8,7 @@ import com.ocoelhogabriel.usersecurity.domain.entity.Role;
  * Repository interface for Role entities.
  * Extends the generic Repository interface with Role-specific methods.
  */
-public interface RoleRepository extends Repository<Role, UUID> {
+public interface RoleRepository extends Repository<Role, Long> {
     
     /**
      * Finds a role by name.
