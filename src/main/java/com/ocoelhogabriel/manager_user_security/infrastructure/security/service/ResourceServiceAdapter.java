@@ -12,15 +12,15 @@ import com.ocoelhogabriel.manager_user_security.infrastructure.security.authoriz
  * using the application ResourceService
  */
 @Service
-public class ResourceServiceAdapter implements ResourceService {
+public class ResourceServiceAdapter implements com.ocoelhogabriel.manager_user_security.domain.service.ResourceService {
 
     @Autowired
     private com.ocoelhogabriel.manager_user_security.application.service.ResourceService appResourceService;
     
     @Override
     public Resource findByName(String name) {
-        // This is a simplified implementation
-        // Ideally, we would query the repository and map the domain entity to the authorization entity
+        // Implementação simplificada adaptando a interface de domínio para usar o serviço de aplicação
+        // Em uma implementação completa, usaríamos o appResourceService para buscar o recurso e depois mapear
         return new Resource(name, "Description for " + name);
     }
 }

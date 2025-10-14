@@ -16,19 +16,19 @@ import java.util.stream.Collectors;
  */
 @Repository
 public class PlantRepositoryImpl implements PlantRepository {
-    
+
     private final PlantJpaRepository plantJpaRepository;
     private final PlantMapper plantMapper;
-    
+
     public PlantRepositoryImpl(PlantJpaRepository plantJpaRepository, PlantMapper plantMapper) {
         this.plantJpaRepository = plantJpaRepository;
         this.plantMapper = plantMapper;
     }
-    
+
     @Override
     public Plant save(Plant plant) {
         PlantEntity entity;
-        
+
         if (plant.getId() != null) {
             // Update existing plant
             Optional<PlantEntity> existingEntity = plantJpaRepository.findById(plant.getId());
@@ -41,36 +41,31 @@ public class PlantRepositoryImpl implements PlantRepository {
             // Create new plant
             entity = plantMapper.toEntity(plant);
         }
-        
+
         PlantEntity savedEntity = plantJpaRepository.save(entity);
         return plantMapper.toDomain(savedEntity);
     }
-    
+
     @Override
     public Optional<Plant> findById(Long id) {
-        return plantJpaRepository.findById(id)
-                .map(plantMapper::toDomain);
+        return plantJpaRepository.findById(id).map(plantMapper::toDomain);
     }
-    
+
     @Override
     public List<Plant> findAll() {
-        return plantJpaRepository.findAll().stream()
-                .map(plantMapper::toDomain)
-                .collect(Collectors.toList());
+        return plantJpaRepository.findAll().stream().map(plantMapper::toDomain).collect(Collectors.toList());
     }
-    
+
     @Override
     public List<Plant> findByCompanyId(Long companyId) {
-        return plantJpaRepository.findByCompanyId(companyId).stream()
-                .map(plantMapper::toDomain)
-                .collect(Collectors.toList());
+        return plantJpaRepository.findByCompanyId(companyId).stream().map(plantMapper::toDomain).collect(Collectors.toList());
     }
-    
+
     @Override
     public void deleteById(Long id) {
         plantJpaRepository.deleteById(id);
     }
-    
+
     @Override
     public boolean existsByNameAndCompanyId(String name, Long companyId) {
         return plantJpaRepository.existsByNameAndCompanyId(name, companyId);

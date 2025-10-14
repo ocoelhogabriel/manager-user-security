@@ -8,7 +8,7 @@ import java.util.UUID;
  * Data Transfer Object for user response.
  */
 public class UserResponse {
-    private UUID id;
+    private Long id;
     private String username;
     private String email;
     private boolean active;
@@ -18,7 +18,7 @@ public class UserResponse {
         this.roles = new HashSet<>();
     }
     
-    public UserResponse(UUID id, String username, String email, boolean active, Set<RoleResponse> roles) {
+    public UserResponse(Long id, String username, String email, boolean active, Set<RoleResponse> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -26,11 +26,11 @@ public class UserResponse {
         this.roles = roles != null ? roles : new HashSet<>();
     }
     
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
     
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
     
@@ -70,24 +70,24 @@ public class UserResponse {
      * Inner class for role response.
      */
     public static class RoleResponse {
-        private UUID id;
+        private Long id;
         private String name;
         private String description;
         
         public RoleResponse() {
         }
         
-        public RoleResponse(UUID id, String name, String description) {
+        public RoleResponse(Long id, String name, String description) {
             this.id = id;
             this.name = name;
             this.description = description;
         }
         
-        public UUID getId() {
+        public Long getId() {
             return id;
         }
         
-        public void setId(UUID id) {
+        public void setId(Long id) {
             this.id = id;
         }
         

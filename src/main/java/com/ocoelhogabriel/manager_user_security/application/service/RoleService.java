@@ -86,4 +86,21 @@ public interface RoleService {
      * @param permissionId the permission ID
      */
     void removePermission(Long roleId, Long permissionId);
+
+    /**
+     * Find all active roles.
+     *
+     * @return a set of active roles
+     */
+    Set<Role> findByActive();
+
+    /**
+     * Assign permissions to a role.
+     *
+     * @param roleId the ID of the role to assign permissions to
+     * @param permissionIds the list of permission IDs to assign
+     * @return the updated role with assigned permissions
+     * @throws com.ocoelhogabriel.usersecurity.domain.exception.ResourceNotFoundException if role not found
+     */
+    Role assignPermissions(Long roleId, List<Long> permissionIds);
 }

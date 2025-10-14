@@ -26,6 +26,14 @@ public interface ResourceService {
     Resource findById(Long id);
 
     /**
+     * Find a resource by name.
+     *
+     * @param name the resource name
+     * @return the resource or null if not found
+     */
+    Resource findByName(String name);
+
+    /**
      * Create a new resource.
      *
      * @param resource the resource to create
@@ -44,19 +52,21 @@ public interface ResourceService {
     Resource update(Resource resource);
 
     /**
-     * Delete a resource.
+     * Delete a resource by ID.
      *
-     * @param id the ID of the resource to delete
+     * @param id the resource ID
      * @throws com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException if resource not found
      */
     void delete(Long id);
 
     /**
-     * Find resources by path pattern and method.
+     * Find resources that match a URL pattern and HTTP method.
      *
-     * @param path the path pattern to match
+     * @param url the URL pattern to match
      * @param method the HTTP method
-     * @return matching resources
+     * @return a list of matching resources
      */
+    List<Resource> findMatchingResources(String url, String method);
+
     List<Resource> findByPathAndMethod(String path, String method);
 }

@@ -41,6 +41,12 @@ public class RoleEntity {
     @Size(max = 255)
     private String description;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(unique = true)
+    private String code;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -70,6 +76,22 @@ public class RoleEntity {
     public RoleEntity(String name, String description) {
         this.name = name;
         this.description = description;
+        this.active = true;
+    }
+
+    /**
+     * Constructor with all fields.
+     *
+     * @param name the role name
+     * @param description the role description
+     * @param active whether the role is active
+     * @param code the role code
+     */
+    public RoleEntity(String name, String description, boolean active, String code) {
+        this.name = name;
+        this.description = description;
+        this.active = active;
+        this.code = code;
     }
 
     // Getters and Setters
@@ -96,6 +118,22 @@ public class RoleEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public LocalDateTime getCreatedAt() {

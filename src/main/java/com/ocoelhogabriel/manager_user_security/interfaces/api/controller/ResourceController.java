@@ -97,10 +97,15 @@ public class ResourceController {
     public ResponseEntity<ResourceResponse> updateResource(
             @PathVariable Long id,
             @Valid @RequestBody UpdateResourceRequest request) {
-        Resource resource = resourceMapper.toEntity(request);
-        resource.setId(id);
-        Resource updatedResource = resourceService.update(resource);
-        return ResponseEntity.ok(resourceMapper.toResponse(updatedResource));
+        // Primeiro busca o recurso existente para obter o UUID correspondente
+        Resource existingResource = resourceService.findById(id);
+        
+        // Usa o método updateEntity do mapper que aceita o recurso existente
+        Resource updatedResource = resourceMapper.updateEntity(request, existingResource);
+        
+        // Atualiza o recurso e retorna a resposta
+        Resource savedResource = resourceService.update(updatedResource);
+        return ResponseEntity.ok(resourceMapper.toResponse(savedResource));
     }
 
     /**

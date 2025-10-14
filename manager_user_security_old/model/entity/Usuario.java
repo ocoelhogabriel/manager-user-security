@@ -95,7 +95,7 @@ public class Usuario implements UserDetails {
 			builder.append("usucpf=").append(usucpf).append(", ");
 		}
 		if (usunom != null) {
-			builder.append("usunam=").append(usunom).append(", ");
+			builder.append("usunom=").append(usunom).append(", ");
 		}
 		if (usulog != null) {
 			builder.append("usulog=").append(usulog).append(", ");
@@ -107,7 +107,7 @@ public class Usuario implements UserDetails {
 			builder.append("usuema=").append(usuema).append(", ");
 		}
 		if (empresa != null) {
-			builder.append("empcod=").append(empresa).append(", ");
+			builder.append("empresa=").append(empresa).append(", ");
 		}
 		if (perfil != null) {
 			builder.append("perfil=").append(perfil).append(", ");

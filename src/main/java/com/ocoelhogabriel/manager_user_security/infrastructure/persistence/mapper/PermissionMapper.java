@@ -1,10 +1,15 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper;
 
 import org.springframework.stereotype.Component;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.PermissionEntity;
+import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.ResourceEntity;
+import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.ResourceJpaRepository;
 
 /**
  * Mapper for converting between Permission domain entity and PermissionEntity JPA entity.
@@ -13,14 +18,17 @@ import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entit
 public class PermissionMapper {
 
     private final ResourceMapper resourceMapper;
+    private final ResourceJpaRepository resourceRepository;
 
     /**
      * Constructor.
      *
      * @param resourceMapper the resource mapper
+     * @param resourceRepository the resource repository
      */
-    public PermissionMapper(ResourceMapper resourceMapper) {
+    public PermissionMapper(ResourceMapper resourceMapper, ResourceJpaRepository resourceRepository) {
         this.resourceMapper = resourceMapper;
+        this.resourceRepository = resourceRepository;
     }
 
     /**
@@ -34,16 +42,21 @@ public class PermissionMapper {
             return null;
         }
 
-        Resource resource = null;
-        if (entity.getResource() != null) {
-            resource = resourceMapper.toDomain(entity.getResource());
+        // Create a set with actions
+        HashSet<String> actions = new HashSet<>();
+
+        // Add the action if available, otherwise use the name as a fallback
+        if (entity.getAction() != null && !entity.getAction().isEmpty()) {
+            actions.add(entity.getAction());
+        } else {
+            actions.add(entity.getName());
         }
 
+        // Create the permission with the ID, resource name, and actions
         Permission permission = new Permission(
                 entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                resource
+                entity.getResource() != null ? entity.getResource().getName() : "unknown",
+                actions
         );
 
         return permission;
@@ -51,51 +64,50 @@ public class PermissionMapper {
 
     /**
      * Maps a domain entity to a JPA entity.
+     * This method will look up the appropriate ResourceEntity based on the resource name in the domain entity.
      *
      * @param domain the domain entity
-     * @return the JPA entity
+     * @return the JPA entity or null if the resource cannot be found
      */
     public PermissionEntity toEntity(Permission domain) {
         if (domain == null) {
             return null;
         }
 
-        PermissionEntity entity = new PermissionEntity();
-        
-        if (domain.getId() != null) {
-            entity.setId(domain.getId());
-        }
-        
-        entity.setName(domain.getName());
-        entity.setDescription(domain.getDescription());
+        // Find the resource entity by name
+        ResourceEntity resourceEntity = resourceRepository.findByName(domain.getResource())
+                .orElse(null);
 
-        // Map resource if it exists
-        if (domain.getResource() != null) {
-            entity.setResource(resourceMapper.toEntity(domain.getResource()));
+        // If resource not found, we can't create a valid permission entity
+        if (resourceEntity == null) {
+            return null;
         }
 
-        return entity;
+        return toEntity(domain, resourceEntity);
     }
 
     /**
-     * Updates a JPA entity with data from a domain entity.
+     * Maps a domain entity to a JPA entity.
      *
-     * @param entity the JPA entity to update
-     * @param domain the domain entity with updated data
-     * @return the updated JPA entity
+     * @param domain the domain entity
+     * @param resourceEntity the resource entity to associate with the permission
+     * @return the JPA entity
      */
-    public PermissionEntity updateEntityFromDomain(PermissionEntity entity, Permission domain) {
-        if (entity == null || domain == null) {
-            return entity;
+    public PermissionEntity toEntity(Permission domain, ResourceEntity resourceEntity) {
+        if (domain == null) {
+            return null;
         }
 
-        entity.setName(domain.getName());
-        entity.setDescription(domain.getDescription());
+        // Get the first action from the set or use empty string if none exists
+        String action = domain.getActions().isEmpty() ?
+                        "" : domain.getActions().iterator().next();
 
-        // Update resource if it exists in the domain object
-        if (domain.getResource() != null) {
-            entity.setResource(resourceMapper.toEntity(domain.getResource()));
-        }
+        // Create the permission entity with name and description
+        PermissionEntity entity = new PermissionEntity();
+        entity.setName(domain.getResource() + "_" + action);  // Generate a name from resource and action
+        entity.setDescription("Permission to " + action + " on " + domain.getResource());
+        entity.setAction(action);
+        entity.setResource(resourceEntity);
 
         return entity;
     }

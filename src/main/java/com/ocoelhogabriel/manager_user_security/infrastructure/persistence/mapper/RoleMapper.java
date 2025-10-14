@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity;
 
@@ -37,18 +38,19 @@ public class RoleMapper {
             return null;
         }
 
-        Role role = new Role(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription()
-        );
+        // Create a new Role with the basic attributes
+        Role role = new Role(entity.getName(), entity.getDescription());
+        role.setId(entity.getId());
+        role.setActive(entity.isActive());
+        role.setCode(entity.getCode());
+        role.setCreatedAt(entity.getCreatedAt());
+        role.setUpdatedAt(entity.getUpdatedAt());
 
         // Map permissions if they exist
         if (entity.getPermissions() != null && !entity.getPermissions().isEmpty()) {
-            Set<com.ocoelhogabriel.manager_user_security.domain.entity.Permission> permissions = entity.getPermissions().stream()
+            Set<Permission> permissions = entity.getPermissions().stream()
                     .map(permissionMapper::toDomain)
                     .collect(Collectors.toSet());
-            
             role.setPermissions(permissions);
         }
 
@@ -74,17 +76,17 @@ public class RoleMapper {
         
         entity.setName(domain.getName());
         entity.setDescription(domain.getDescription());
+        entity.setActive(domain.isActive());
+        entity.setCode(domain.getCode());
+        entity.setCreatedAt(domain.getCreatedAt());
+        entity.setUpdatedAt(domain.getUpdatedAt());
 
         // Map permissions if they exist
         if (domain.getPermissions() != null && !domain.getPermissions().isEmpty()) {
-            Set<com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.PermissionEntity> permissions = new HashSet<>();
-            
-            domain.getPermissions().forEach(permission -> {
-                com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.PermissionEntity permissionEntity = permissionMapper.toEntity(permission);
-                permissions.add(permissionEntity);
-                permissionEntity.setRole(entity);
-            });
-            
+            Set<com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.PermissionEntity> permissions =
+                domain.getPermissions().stream()
+                    .map(permissionMapper::toEntity)
+                    .collect(Collectors.toSet());
             entity.setPermissions(permissions);
         }
 
@@ -105,6 +107,18 @@ public class RoleMapper {
 
         entity.setName(domain.getName());
         entity.setDescription(domain.getDescription());
+        entity.setActive(domain.isActive());
+        entity.setCode(domain.getCode());
+        entity.setUpdatedAt(domain.getUpdatedAt());
+
+        // Update permissions if they exist in the domain object
+        if (domain.getPermissions() != null && !domain.getPermissions().isEmpty()) {
+            Set<com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.PermissionEntity> permissions =
+                domain.getPermissions().stream()
+                    .map(permissionMapper::toEntity)
+                    .collect(Collectors.toSet());
+            entity.setPermissions(permissions);
+        }
 
         return entity;
     }

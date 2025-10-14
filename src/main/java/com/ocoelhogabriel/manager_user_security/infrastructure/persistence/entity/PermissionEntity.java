@@ -38,6 +38,9 @@ public class PermissionEntity {
     @Size(max = 255)
     private String description;
 
+    @Column(name = "action")
+    private String action;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
     private ResourceEntity resource;
@@ -64,13 +67,28 @@ public class PermissionEntity {
      * Constructor with basic fields.
      *
      * @param name the permission name
+     * @param description the permission description
      * @param resource the resource this permission applies to
-     * @param role the role this permission belongs to
      */
-    public PermissionEntity(String name, ResourceEntity resource, RoleEntity role) {
+    public PermissionEntity(String name, String description, ResourceEntity resource) {
         this.name = name;
+        this.description = description;
         this.resource = resource;
-        this.role = role;
+    }
+
+    /**
+     * Constructor with all fields.
+     *
+     * @param name the permission name
+     * @param description the permission description
+     * @param action the action this permission allows
+     * @param resource the resource this permission applies to
+     */
+    public PermissionEntity(String name, String description, String action, ResourceEntity resource) {
+        this.name = name;
+        this.description = description;
+        this.action = action;
+        this.resource = resource;
     }
 
     // Getters and Setters
@@ -97,6 +115,14 @@ public class PermissionEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public ResourceEntity getResource() {

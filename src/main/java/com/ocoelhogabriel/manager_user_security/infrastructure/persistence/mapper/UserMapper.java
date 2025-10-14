@@ -36,13 +36,21 @@ public class UserMapper {
             return null;
         }
 
-        User user = new User(
-                entity.getId(),
-                entity.getUsername(),
-                entity.getEmail(),
-                entity.getPassword(),
-                entity.isActive()
-        );
+        // Create a base user with username, email and password
+        User user = new User(entity.getUsername(), entity.getEmail(), entity.getPassword());
+
+        // Set additional properties
+        user.setId(entity.getId());
+        user.setActive(entity.isActive());
+        user.setFullName(entity.getFullName());
+        user.setImage(entity.getImage());
+        user.setRegistrationNumber(entity.getRegistrationNumber());
+        user.setPhone(entity.getPhone());
+        user.setCpf(entity.getCpf());
+
+        // Company related properties 
+        user.setCompanyId(entity.getCompanyId());
+        user.setCompanyName(entity.getCompanyName());
 
         // Map roles if they exist
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
@@ -66,57 +74,26 @@ public class UserMapper {
         }
 
         UserEntity entity = new UserEntity();
-        
-        if (domain.getId() != null) {
-            entity.setId(domain.getId());
-        }
-        
+        entity.setId(domain.getId());
         entity.setUsername(domain.getUsername());
         entity.setEmail(domain.getEmail());
         entity.setPassword(domain.getPasswordHash());
+        entity.setFullName(domain.getFullName());
         entity.setActive(domain.isActive());
+        entity.setImage(domain.getImage());
+        entity.setRegistrationNumber(domain.getRegistrationNumber());
+        entity.setPhone(domain.getPhone());
+        entity.setCpf(domain.getCpf());
+        entity.setCompanyId(domain.getCompanyId());
+        entity.setCompanyName(domain.getCompanyName());
 
         // Map roles if they exist
         if (domain.getRoles() != null && !domain.getRoles().isEmpty()) {
-            Set<com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity> roles = domain.getRoles().stream()
-                    .map(roleMapper::toEntity)
-                    .collect(Collectors.toSet());
-            
-            entity.setRoles(roles);
-        }
-
-        return entity;
-    }
-
-    /**
-     * Updates a JPA entity with data from a domain entity.
-     *
-     * @param entity the JPA entity to update
-     * @param domain the domain entity with updated data
-     * @return the updated JPA entity
-     */
-    public UserEntity updateEntityFromDomain(UserEntity entity, User domain) {
-        if (entity == null || domain == null) {
-            return entity;
-        }
-
-        entity.setUsername(domain.getUsername());
-        entity.setEmail(domain.getEmail());
-        
-        // Only update password if it's provided
-        if (domain.getPasswordHash() != null && !domain.getPasswordHash().isEmpty()) {
-            entity.setPassword(domain.getPasswordHash());
-        }
-        
-        entity.setActive(domain.isActive());
-
-        // Update roles if they exist in the domain object
-        if (domain.getRoles() != null && !domain.getRoles().isEmpty()) {
-            Set<com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity> roles = domain.getRoles().stream()
-                    .map(roleMapper::toEntity)
-                    .collect(Collectors.toSet());
-            
-            entity.setRoles(roles);
+            domain.getRoles().forEach(role -> {
+                if (role != null) {
+                    entity.addRole(roleMapper.toEntity(role));
+                }
+            });
         }
 
         return entity;

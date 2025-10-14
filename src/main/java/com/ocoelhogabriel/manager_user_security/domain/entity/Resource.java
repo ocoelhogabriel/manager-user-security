@@ -11,7 +11,7 @@ import java.util.Collections;
  * Resources are elements that can be accessed via the API and may require authorization.
  */
 public class Resource {
-    private final UUID id;
+    private final Long id;
     private String name;
     private String description;
     private String urlPattern;
@@ -26,8 +26,8 @@ public class Resource {
      * @param urlPattern the URL pattern of the resource
      * @param version the API version of the resource
      */
-    public Resource(String name, String description, String urlPattern, String version) {
-        this.id = UUID.randomUUID();
+    public Resource(Long id, String name, String description, String urlPattern, String version) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.urlPattern = urlPattern;
@@ -45,7 +45,7 @@ public class Resource {
      * @param version the API version of the resource
      * @param allowedMethods the HTTP methods allowed for this resource
      */
-    public Resource(UUID id, String name, String description, String urlPattern, String version, Set<String> allowedMethods) {
+    public Resource(Long id, String name, String description, String urlPattern, String version, Set<String> allowedMethods) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -54,7 +54,7 @@ public class Resource {
         this.allowedMethods = allowedMethods != null ? new HashSet<>(allowedMethods) : new HashSet<>();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 

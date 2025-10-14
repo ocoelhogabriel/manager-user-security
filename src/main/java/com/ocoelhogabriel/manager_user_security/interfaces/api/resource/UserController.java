@@ -1,7 +1,6 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.api.resource;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +65,7 @@ public class UserController {
      */
     @GetMapping("/v1/{id}")
     @Operation(summary = "Get user", description = "Gets a user by ID")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return userService.findById(id)
                 .map(user -> ResponseEntity.ok(mapUserToResponse(user)))
                 .orElse(ResponseEntity.notFound().build());
@@ -96,7 +95,7 @@ public class UserController {
     @PutMapping("/v1/{id}")
     @Operation(summary = "Update user", description = "Updates a user")
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable UUID id, 
+            @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
         
         return userService.findById(id)
@@ -119,7 +118,7 @@ public class UserController {
     @PutMapping("/v1/{id}/password")
     @Operation(summary = "Update password", description = "Updates a user's password")
     public ResponseEntity<UserResponse> updatePassword(
-            @PathVariable UUID id, 
+            @PathVariable Long id,
             @Valid @RequestBody UpdatePasswordRequest request) {
         
         return userService.findById(id)
@@ -138,7 +137,7 @@ public class UserController {
      */
     @PutMapping("/v1/{id}/activate")
     @Operation(summary = "Activate user", description = "Activates a user")
-    public ResponseEntity<UserResponse> activateUser(@PathVariable UUID id) {
+    public ResponseEntity<UserResponse> activateUser(@PathVariable Long id) {
         return userService.findById(id)
                 .map(user -> {
                     User updatedUser = userService.activateUser(user);
@@ -155,7 +154,7 @@ public class UserController {
      */
     @PutMapping("/v1/{id}/deactivate")
     @Operation(summary = "Deactivate user", description = "Deactivates a user")
-    public ResponseEntity<UserResponse> deactivateUser(@PathVariable UUID id) {
+    public ResponseEntity<UserResponse> deactivateUser(@PathVariable Long id) {
         return userService.findById(id)
                 .map(user -> {
                     User updatedUser = userService.deactivateUser(user);
@@ -172,7 +171,7 @@ public class UserController {
      */
     @DeleteMapping("/v1/{id}")
     @Operation(summary = "Delete user", description = "Deletes a user")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();

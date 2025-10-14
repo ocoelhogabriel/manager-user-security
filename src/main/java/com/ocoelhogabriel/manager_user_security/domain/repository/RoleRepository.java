@@ -1,15 +1,17 @@
 package com.ocoelhogabriel.manager_user_security.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
+import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity;
 
 /**
- * Repository interface for Role entities.
- * Extends the generic Repository interface with Role-specific methods.
+ * Repository interface for Role entities. Extends the generic Repository interface with Role-specific methods.
  */
 public interface RoleRepository extends Repository<Role, Long> {
-    
+
     /**
      * Finds a role by name.
      *
@@ -17,7 +19,7 @@ public interface RoleRepository extends Repository<Role, Long> {
      * @return an Optional containing the found role, or empty if not found
      */
     Optional<Role> findByName(String name);
-    
+
     /**
      * Checks if a role with the given name exists.
      *
@@ -25,4 +27,28 @@ public interface RoleRepository extends Repository<Role, Long> {
      * @return true if a role with the given name exists, false otherwise
      */
     boolean existsByName(String name);
+
+    /**
+     * Finds roles by active status.
+     *
+     * @param active the active status
+     * @return a list of roles with the given active status
+     */
+    List<Role> findByActive(boolean active);
+
+    /**
+     * Finds roles for a user.
+     *
+     * @param userId the user ID
+     * @return a set of roles for the given user
+     */
+    Set<Role> findByUserId(Long userId);
+
+    boolean existsById(Long id);
+
+    void deleteById(Long id);
+
+    Optional<Role> findById(Long id);
+
+    Role save(RoleEntity role);
 }

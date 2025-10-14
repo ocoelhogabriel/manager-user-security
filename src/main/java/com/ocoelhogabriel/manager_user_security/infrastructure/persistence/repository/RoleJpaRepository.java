@@ -1,8 +1,10 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,16 +23,16 @@ public interface RoleJpaRepository extends JpaRepository<RoleEntity, Long> {
      * @return the role, if found
      */
     Optional<RoleEntity> findByName(String name);
-    
+
     /**
      * Find a role by name, excluding a specific ID.
      *
      * @param name the role name
-     * @param id the ID to exclude
+     * @param id   the ID to exclude
      * @return the role, if found
      */
     Optional<RoleEntity> findByNameAndIdNot(String name, Long id);
-    
+
     /**
      * Check if a role exists with the given name.
      *
@@ -38,7 +40,7 @@ public interface RoleJpaRepository extends JpaRepository<RoleEntity, Long> {
      * @return true if a role exists with the given name, false otherwise
      */
     boolean existsByName(String name);
-    
+
     /**
      * Find roles by user ID.
      *
@@ -46,4 +48,10 @@ public interface RoleJpaRepository extends JpaRepository<RoleEntity, Long> {
      * @return list of roles
      */
     List<RoleEntity> findByUsersId(Long userId);
+
+
+    Collection<Role> findByUserId(Long userId);
+
+    Collection<Object> findByActive(boolean active);
+
 }

@@ -17,14 +17,14 @@ import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entit
 public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, Long> {
 
     /**
-     * Find a resource by its path and HTTP method.
+     * Find a resource by its URL pattern and HTTP method.
      *
-     * @param path the resource path
+     * @param urlPattern the resource URL pattern
      * @param method the HTTP method
      * @return the resource, if found
      */
-    Optional<ResourceEntity> findByPathAndMethod(String path, String method);
-    
+    Optional<ResourceEntity> findByUrlPatternAndMethod(String urlPattern, String method);
+
     /**
      * Find a resource by name.
      *
@@ -34,35 +34,18 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, Lon
     Optional<ResourceEntity> findByName(String name);
     
     /**
-     * Find a resource by its path and HTTP method, excluding a specific ID.
+     * Find resources by version.
      *
-     * @param path the resource path
-     * @param method the HTTP method
-     * @param id the ID to exclude
-     * @return the resource, if found
+     * @param version the version
+     * @return the list of resources with the specified version
      */
-    Optional<ResourceEntity> findByPathAndMethodAndIdNot(String path, String method, Long id);
-    
+    List<ResourceEntity> findByVersion(String version);
+
     /**
-     * Find all resources that match a specific path pattern and HTTP method.
-     * This uses pattern matching to support path variables and wildcards.
+     * Check if a resource with the given URL pattern exists.
      *
-     * @param path the path pattern to match
-     * @param method the HTTP method
-     * @return list of matching resources
+     * @param urlPattern the URL pattern to check
+     * @return true if a resource with the URL pattern exists, false otherwise
      */
-    @Query("SELECT r FROM ResourceEntity r WHERE " +
-           "(:method = r.method) AND " +
-           "(r.path = :path OR " +
-           "REPLACE(r.path, '**', '%') LIKE REPLACE(:path, '**', '%') OR " +
-           "REPLACE(:path, '**', '%') LIKE REPLACE(r.path, '**', '%'))")
-    List<ResourceEntity> findMatchingResources(@Param("path") String path, @Param("method") String method);
-    
-    /**
-     * Find all resources by HTTP method.
-     *
-     * @param method the HTTP method
-     * @return list of resources
-     */
-    List<ResourceEntity> findByMethod(String method);
+    boolean existsByUrlPattern(String urlPattern);
 }

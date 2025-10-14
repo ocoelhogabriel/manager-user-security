@@ -11,7 +11,7 @@ import java.util.Collections;
  * Permissions are used to control access to resources.
  */
 public class Permission {
-    private final UUID id;
+    private final Long id;
     private String resource;
     private Set<String> actions;
 
@@ -21,8 +21,8 @@ public class Permission {
      * @param resource the resource name
      * @param action the action to be performed on the resource
      */
-    public Permission(String resource, String action) {
-        this.id = UUID.randomUUID();
+    public Permission(Long id, String resource, String action) {
+        this.id = id;
         this.resource = resource;
         this.actions = new HashSet<>();
         this.actions.add(action);
@@ -35,13 +35,13 @@ public class Permission {
      * @param resource the resource name
      * @param actions the actions that can be performed on the resource
      */
-    public Permission(UUID id, String resource, Set<String> actions) {
+    public Permission(Long id, String resource, Set<String> actions) {
         this.id = id;
         this.resource = resource;
         this.actions = actions != null ? new HashSet<>(actions) : new HashSet<>();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -85,6 +85,16 @@ public class Permission {
      */
     public boolean hasAction(String action) {
         return actions.contains(action);
+    }
+
+    /**
+     * Gets the first action in the actions set or null if there are no actions.
+     * This is a convenience method for code that expects a single action.
+     *
+     * @return the first action or null if none exists
+     */
+    public String getAction() {
+        return actions.isEmpty() ? null : actions.iterator().next();
     }
 
     @Override

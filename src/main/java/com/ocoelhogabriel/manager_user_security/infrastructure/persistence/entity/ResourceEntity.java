@@ -41,11 +41,18 @@ public class ResourceEntity {
 
     @NotBlank
     @Size(max = 255)
-    private String path;
+    @Column(name = "url_pattern")
+    private String urlPattern;
 
     @NotBlank
     @Size(max = 10)
     private String method;
+
+    @Column(name = "version")
+    private String version;
+
+    @Column(name = "allowed_methods")
+    private String allowedMethods;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -68,12 +75,14 @@ public class ResourceEntity {
      * Constructor with basic fields.
      *
      * @param name the resource name
-     * @param path the resource path pattern
-     * @param method the HTTP method
+     * @param description the resource description
+     * @param urlPattern the URL pattern of the resource
+     * @param method the HTTP method (GET, POST, etc.)
      */
-    public ResourceEntity(String name, String path, String method) {
+    public ResourceEntity(String name, String description, String urlPattern, String method) {
         this.name = name;
-        this.path = path;
+        this.description = description;
+        this.urlPattern = urlPattern;
         this.method = method;
     }
 
@@ -82,14 +91,19 @@ public class ResourceEntity {
      *
      * @param name the resource name
      * @param description the resource description
-     * @param path the resource path pattern
-     * @param method the HTTP method
+     * @param urlPattern the URL pattern of the resource
+     * @param method the HTTP method (GET, POST, etc.)
+     * @param version the API version
+     * @param allowedMethods comma-separated list of allowed HTTP methods
      */
-    public ResourceEntity(String name, String description, String path, String method) {
+    public ResourceEntity(String name, String description, String urlPattern, String method,
+                          String version, String allowedMethods) {
         this.name = name;
         this.description = description;
-        this.path = path;
+        this.urlPattern = urlPattern;
         this.method = method;
+        this.version = version;
+        this.allowedMethods = allowedMethods;
     }
 
     // Getters and Setters
@@ -118,12 +132,12 @@ public class ResourceEntity {
         this.description = description;
     }
 
-    public String getPath() {
-        return path;
+    public String getUrlPattern() {
+        return urlPattern;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setUrlPattern(String urlPattern) {
+        this.urlPattern = urlPattern;
     }
 
     public String getMethod() {
@@ -132,6 +146,22 @@ public class ResourceEntity {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getAllowedMethods() {
+        return allowedMethods;
+    }
+
+    public void setAllowedMethods(String allowedMethods) {
+        this.allowedMethods = allowedMethods;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -163,7 +193,7 @@ public class ResourceEntity {
         return "ResourceEntity{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", path='" + path + '\'' +
+                ", urlPattern='" + urlPattern + '\'' +
                 ", method='" + method + '\'' +
                 '}';
     }

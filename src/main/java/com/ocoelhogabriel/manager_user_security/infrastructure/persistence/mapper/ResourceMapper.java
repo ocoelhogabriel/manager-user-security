@@ -1,6 +1,10 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper;
 
 import org.springframework.stereotype.Component;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.ResourceEntity;
@@ -22,12 +26,28 @@ public class ResourceMapper {
             return null;
         }
 
+        // Create a set of allowed methods
+        Set<String> allowedMethods = new HashSet<>();
+
+        // First check if we have allowedMethods stored as a string
+        if (entity.getAllowedMethods() != null && !entity.getAllowedMethods().isEmpty()) {
+            // Split the comma-separated string into individual methods
+            allowedMethods.addAll(Arrays.asList(entity.getAllowedMethods().split(",")));
+        } else if (entity.getMethod() != null) {
+            // Fallback to single method if allowedMethods is not set
+            allowedMethods.add(entity.getMethod());
+        }
+
+        // Use the version from entity or default to "v1" if not available
+        String version = entity.getVersion() != null ? entity.getVersion() : "v1";
+
         Resource resource = new Resource(
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
-                entity.getPath(),
-                entity.getMethod()
+                entity.getUrlPattern(),
+                version,
+                allowedMethods
         );
 
         return resource;
@@ -44,36 +64,21 @@ public class ResourceMapper {
             return null;
         }
 
+        // Convert the set of allowed methods to a comma-separated string
+        String allowedMethodsStr = domain.getAllowedMethods().stream()
+                .collect(Collectors.joining(","));
+
+        // Get the primary method (first one or empty)
+        String primaryMethod = domain.getAllowedMethods().isEmpty() ?
+                              "" : domain.getAllowedMethods().iterator().next();
+
         ResourceEntity entity = new ResourceEntity();
-        
-        if (domain.getId() != null) {
-            entity.setId(domain.getId());
-        }
-        
         entity.setName(domain.getName());
         entity.setDescription(domain.getDescription());
-        entity.setPath(domain.getPath());
-        entity.setMethod(domain.getMethod());
-
-        return entity;
-    }
-
-    /**
-     * Updates a JPA entity with data from a domain entity.
-     *
-     * @param entity the JPA entity to update
-     * @param domain the domain entity with updated data
-     * @return the updated JPA entity
-     */
-    public ResourceEntity updateEntityFromDomain(ResourceEntity entity, Resource domain) {
-        if (entity == null || domain == null) {
-            return entity;
-        }
-
-        entity.setName(domain.getName());
-        entity.setDescription(domain.getDescription());
-        entity.setPath(domain.getPath());
-        entity.setMethod(domain.getMethod());
+        entity.setUrlPattern(domain.getUrlPattern());
+        entity.setMethod(primaryMethod);
+        entity.setVersion(domain.getVersion());
+        entity.setAllowedMethods(allowedMethodsStr);
 
         return entity;
     }

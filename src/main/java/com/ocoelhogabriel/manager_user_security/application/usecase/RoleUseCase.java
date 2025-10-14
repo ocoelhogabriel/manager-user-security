@@ -1,6 +1,7 @@
 package com.ocoelhogabriel.manager_user_security.application.usecase;
 
 import com.ocoelhogabriel.manager_user_security.application.service.RoleService;
+import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException;
 
@@ -164,17 +165,17 @@ public class RoleUseCase {
     }
     
     /**
-     * Assign multiple permissions to a role.
+     * Assign multiple permissions to a role by their IDs.
      *
-     * @param roleId Role ID
-     * @param permissionIds List of permission IDs to assign
+     * @param roleId ID of the role to assign permissions to
+     * @param resourceIds List of resource IDs to assign to the role
      * @return The updated role with the assigned permissions
      * @throws ResourceNotFoundException if role or any permission not found
      */
     @Transactional
-    public Role assignPermissionsToRole(Long roleId, List<Long> permissionIds) {
-        logger.info("Assigning {} permissions to role ID {}", permissionIds.size(), roleId);
-        return roleService.assignPermissions(roleId, permissionIds);
+    public Role assignPermissionsToRole(Long roleId, List<Long> resourceIds) {
+        logger.info("Assigning {} resources to role ID {}", resourceIds.size(), roleId);
+        return roleService.assignPermissions(roleId, resourceIds);
     }
     
     /**
@@ -185,6 +186,10 @@ public class RoleUseCase {
      */
     @Transactional(readOnly = true)
     public boolean roleNameExists(String name) {
-        return roleService.findByName(name) != null;
+        try {
+            return roleService.findByName(name) != null;
+        } catch (ResourceNotFoundException e) {
+            return false;
+        }
     }
 }

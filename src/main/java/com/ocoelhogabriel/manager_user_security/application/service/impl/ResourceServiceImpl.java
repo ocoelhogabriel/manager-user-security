@@ -43,15 +43,21 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Resource findByName(String name) {
+        return resourceRepository.findByName(name).orElse(null);
+    }
+
+    @Override
     @Transactional
     public Resource create(Resource resource) {
-        // Check if resource with same path and method already exists
+        // Check if resource with same urlPattern and method already exists
         Optional<Resource> existingResource = resourceRepository
-                .findByPathAndMethod(resource.getPath(), resource.getMethod());
-        
+                .findByUrlPatternAndMethod(resource.getUrlPattern(), getFirstAllowedMethod(resource));
+
         if (existingResource.isPresent()) {
-            throw new DuplicateResourceException("Resource", 
-                    "path and method", resource.getPath() + " - " + resource.getMethod());
+            throw new DuplicateResourceException("Resource with URL pattern " + resource.getUrlPattern() +
+                    " and method " + getFirstAllowedMethod(resource) + " already exists");
         }
         
         return resourceRepository.save(resource);
@@ -60,19 +66,19 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     @Transactional
     public Resource update(Resource resource) {
-        // Check if resource exists
+        // Verify resource exists
         resourceRepository.findById(resource.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Resource", resource.getId()));
-        
-        // Check if updated resource would conflict with existing one
+            .orElseThrow(() -> new ResourceNotFoundException("Resource", resource.getId()));
+
+        // Check if resource with same urlPattern and method already exists (excluding this one)
         Optional<Resource> existingResource = resourceRepository
-                .findByPathAndMethodAndIdNot(resource.getPath(), resource.getMethod(), resource.getId());
-        
-        if (existingResource.isPresent()) {
-            throw new DuplicateResourceException("Resource", 
-                    "path and method", resource.getPath() + " - " + resource.getMethod());
+                .findByUrlPatternAndMethod(resource.getUrlPattern(), getFirstAllowedMethod(resource));
+
+        if (existingResource.isPresent() && !existingResource.get().getId().equals(resource.getId())) {
+            throw new DuplicateResourceException("Resource with URL pattern " + resource.getUrlPattern() +
+                    " and method " + getFirstAllowedMethod(resource) + " already exists");
         }
-        
+
         return resourceRepository.save(resource);
     }
 
@@ -88,7 +94,23 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Resource> findMatchingResources(String url, String method) {
+        return resourceRepository.findMatchingResources(url, method);
+    }
+
+    @Override
     public List<Resource> findByPathAndMethod(String path, String method) {
-        return resourceRepository.findMatchingResources(path, method);
+        return resourceRepository.findByPathAndMethod(path, method).stream().map(Resource.toDomain()).toList();
+    }
+
+    /**
+     * Helper method to get the first allowed method from a resource.
+     *
+     * @param resource the resource
+     * @return the first allowed method or an empty string if none
+     */
+    private String getFirstAllowedMethod(Resource resource) {
+        return resource.getAllowedMethods().isEmpty() ?
+               "" : resource.getAllowedMethods().iterator().next();
     }
 }

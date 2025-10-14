@@ -22,10 +22,38 @@ public class UpdatePermissionRequest {
     @NotNull(message = "Role ID is required")
     private Long roleId;
 
+    @NotBlank(message = "Action is required")
+    @Size(max = 50, message = "Action cannot exceed 50 characters")
+    private String action;
+
+    @NotBlank(message = "Resource name is required")
+    @Size(max = 100, message = "Resource name cannot exceed 100 characters")
+    private String resourceName;
+
     /**
      * Default constructor.
      */
     public UpdatePermissionRequest() {
+    }
+
+    /**
+     * Constructor with all fields.
+     *
+     * @param name the permission name
+     * @param description the permission description
+     * @param resourceId the resource ID
+     * @param roleId the role ID
+     * @param action the action
+     * @param resourceName the resource name
+     */
+    public UpdatePermissionRequest(String name, String description, Long resourceId, Long roleId,
+                                  String action, String resourceName) {
+        this.name = name;
+        this.description = description;
+        this.resourceId = resourceId;
+        this.roleId = roleId;
+        this.action = action;
+        this.resourceName = resourceName;
     }
 
     /**
@@ -98,5 +126,41 @@ public class UpdatePermissionRequest {
      */
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
+    }
+
+    /**
+     * Gets the action.
+     *
+     * @return the action
+     */
+    public String getAction() {
+        return action;
+    }
+
+    /**
+     * Sets the action.
+     *
+     * @param action the action to set
+     */
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    /**
+     * Gets the resource name.
+     *
+     * @return the resource name
+     */
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    /**
+     * Sets the resource name.
+     *
+     * @param resourceName the resource name to set
+     */
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 }

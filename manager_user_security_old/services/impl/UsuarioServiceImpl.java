@@ -161,7 +161,10 @@ public class UsuarioServiceImpl implements UsuarioServInterface {
 		user.setUsunom(userModel.getNome());
 		user.setUsucpf(userModel.getCpf());
 		user.setUsulog(userModel.getLogin());
-		user.setUsusen(passwordEncoder.encode(userModel.getSenha()));
+		// Só criptografa a senha se ela não estiver vazia
+		if (userModel.getSenha() != null && !userModel.getSenha().isEmpty()) {
+			user.setUsusen(passwordEncoder.encode(userModel.getSenha()));
+		}
 		user.setUsuema(Optional.ofNullable(userModel.getEmail()).orElse(""));
 		user.setPerfil(perfil);
 		user.setAbrangencia(abrangencia);

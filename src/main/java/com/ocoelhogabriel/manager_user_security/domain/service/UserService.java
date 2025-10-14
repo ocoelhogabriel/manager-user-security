@@ -2,7 +2,6 @@ package com.ocoelhogabriel.manager_user_security.domain.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
@@ -29,8 +28,8 @@ public interface UserService {
      * @param id the ID of the user to find
      * @return an Optional containing the found user, or empty if not found
      */
-    Optional<User> findById(UUID id);
-    
+    Optional<User> findById(Long id);
+
     /**
      * Finds a user by username.
      *
@@ -102,5 +101,7 @@ public interface UserService {
      *
      * @param id the ID of the user to delete
      */
-    void deleteUser(UUID id);
+    void deleteUser(Long id);
+
+    User findByIdWithRoles(Long userId);
 }

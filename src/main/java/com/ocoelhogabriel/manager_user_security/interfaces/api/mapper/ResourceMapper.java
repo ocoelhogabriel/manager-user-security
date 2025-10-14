@@ -1,6 +1,8 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
 
 import org.springframework.stereotype.Component;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.resource.CreateResourceRequest;
@@ -24,13 +26,15 @@ public class ResourceMapper {
             return null;
         }
 
-        return new ResourceResponse(
+        ResourceResponse response = new ResourceResponse(
                 resource.getId(),
                 resource.getName(),
-                resource.getPath(),
+                resource.getUrlPattern(),
                 resource.getDescription(),
-                resource.getMethod()
+                resource.getAllowedMethods().isEmpty() ? null : resource.getAllowedMethods().iterator().next()
         );
+        
+        return response;
     }
 
     /**
@@ -44,31 +48,52 @@ public class ResourceMapper {
             return null;
         }
 
-        Resource resource = new Resource();
-        resource.setName(request.getName());
-        resource.setPath(request.getPath());
-        resource.setDescription(request.getDescription());
-        resource.setMethod(request.getMethod());
+        // Create a set of allowed methods
+        Set<String> allowedMethods = new HashSet<>();
+        if (request.getMethod() != null && !request.getMethod().isEmpty()) {
+            allowedMethods.add(request.getMethod());
+        }
 
+        // Create a new Resource using constructor with values from request
+        Resource resource = new Resource(
+            null,  // ID will be assigned by the database
+            request.getName(),
+            request.getDescription(),
+            request.getPath(),
+            "v1",  // Default version value
+            allowedMethods
+        );
+        
         return resource;
     }
 
     /**
      * Maps an UpdateResourceRequest DTO to Resource entity.
      *
+     * @param id the ID of the resource
      * @param request the UpdateResourceRequest DTO
      * @return the Resource entity
      */
-    public Resource toEntity(UpdateResourceRequest request) {
+    public Resource toEntity(Long id, UpdateResourceRequest request) {
         if (request == null) {
             return null;
         }
 
-        Resource resource = new Resource();
-        resource.setName(request.getName());
-        resource.setPath(request.getPath());
-        resource.setDescription(request.getDescription());
-        resource.setMethod(request.getMethod());
+        // Create a set of allowed methods
+        Set<String> allowedMethods = new HashSet<>();
+        if (request.getMethod() != null && !request.getMethod().isEmpty()) {
+            allowedMethods.add(request.getMethod());
+        }
+
+        // Create a Resource with the existing ID and updated values
+        Resource resource = new Resource(
+            id,
+            request.getName(),
+            request.getDescription(),
+            request.getPath(),
+            "v1",  // Default version value
+            allowedMethods
+        );
 
         return resource;
     }

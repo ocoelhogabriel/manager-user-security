@@ -2,7 +2,6 @@ package com.ocoelhogabriel.manager_user_security.application.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
+    public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -145,12 +144,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         // Check if user exists
         if (!userRepository.existsById(id)) {
             throw new DomainException("User not found");
         }
         
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public User findByIdWithRoles(Long userId) {
+        return userRepository.findByIdWithRoles(userId);
+                .orElseThrow(() -> new DomainException("User not found"));
     }
 }

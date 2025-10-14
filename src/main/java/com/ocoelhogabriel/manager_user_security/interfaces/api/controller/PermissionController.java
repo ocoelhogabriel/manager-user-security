@@ -103,10 +103,16 @@ public class PermissionController {
     public ResponseEntity<PermissionResponse> updatePermission(
             @PathVariable Long id,
             @Valid @RequestBody UpdatePermissionRequest request) {
-        Permission permission = permissionMapper.toEntity(request);
-        permission.setId(id);
-        Permission updatedPermission = permissionService.update(permission);
-        return ResponseEntity.ok(permissionMapper.toResponse(updatedPermission));
+        // Primeiro obter a permissão existente para confirmar que existe
+        Permission existingPermission = permissionService.findById(id);
+
+        // Criar uma nova instância com o ID existente e dados atualizados
+        Permission updatedPermission = permissionMapper.toEntityWithId(request, id);
+
+        // Atualizar a permissão no serviço
+        Permission savedPermission = permissionService.update(updatedPermission);
+
+        return ResponseEntity.ok(permissionMapper.toResponse(savedPermission));
     }
 
     /**

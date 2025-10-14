@@ -5,11 +5,10 @@ import java.util.Optional;
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 
 /**
- * Repository interface for User entities.
- * Extends the generic Repository interface with User-specific methods.
+ * Repository interface for User entities. Extends the generic Repository interface with User-specific methods.
  */
 public interface UserRepository extends Repository<User, Long> {
-    
+
     /**
      * Finds a user by username.
      *
@@ -17,7 +16,7 @@ public interface UserRepository extends Repository<User, Long> {
      * @return an Optional containing the found user, or empty if not found
      */
     Optional<User> findByUsername(String username);
-    
+
     /**
      * Finds a user by email.
      *
@@ -25,7 +24,7 @@ public interface UserRepository extends Repository<User, Long> {
      * @return an Optional containing the found user, or empty if not found
      */
     Optional<User> findByEmail(String email);
-    
+
     /**
      * Checks if a user with the given username exists.
      *
@@ -33,7 +32,7 @@ public interface UserRepository extends Repository<User, Long> {
      * @return true if a user with the given username exists, false otherwise
      */
     boolean existsByUsername(String username);
-    
+
     /**
      * Checks if a user with the given email exists.
      *
@@ -41,4 +40,6 @@ public interface UserRepository extends Repository<User, Long> {
      * @return true if a user with the given email exists, false otherwise
      */
     boolean existsByEmail(String email);
+
+    User findByIdWithRoles(Long userId);
 }
