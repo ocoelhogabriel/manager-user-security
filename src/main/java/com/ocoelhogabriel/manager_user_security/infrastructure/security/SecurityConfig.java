@@ -1,116 +1,141 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.security;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtAuthenticationFilter;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtService;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.service.UserDetailsServiceImpl;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.util.SecurityConstants;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.filter.JwtAuthenticationFilter;
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.handler.CustomAccessDeniedHandler;
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.handler.CustomAuthenticationEntryPoint;
-
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import java.util.Arrays;
 
 /**
- * Security configuration class for the application.
- * Configures Spring Security with JWT authentication.
+ * Centralized configuration class for Spring Security.
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @SecurityScheme(
-    name = "bearerAuth", 
-    description = "JWT Authentication", 
-    type = SecuritySchemeType.HTTP, 
-    scheme = "bearer", 
-    bearerFormat = "JWT", 
+    name = "bearerAuth",
+    description = "JWT Authentication",
+    type = SecuritySchemeType.HTTP,
+    scheme = "bearer",
+    bearerFormat = "JWT",
     in = SecuritySchemeIn.HEADER
 )
 public class SecurityConfig {
 
+    private final UserDetailsServiceImpl userDetailsService;
+    private final JwtService jwtService;
+
     /**
-     * List of URL patterns that don't require authentication.
+     * Constructor for SecurityConfig.
+     *
+     * @param userDetailsService the user details service
+     * @param jwtService the JWT service
      */
-    private static final String[] PUBLIC_URLS = {
-        "/api/auth/v1/**",
-        "/api/health/**",
-        "/api/device/v1/keep-alive/**",
-        "/api/device/v1/auth-validate",
-        "/api/device/v1/auth",
-        "/v2/api-docs",
-        "/v3/api-docs",
-        "/v3/api-docs/**",
-        "/swagger-resources",
-        "/swagger-resources/**",
-        "/configuration/ui",
-        "/configuration/security",
-        "/swagger-ui/**",
-        "/webjars/**",
-        "/swagger-ui.html",
-        "/swagger-ui/index.html"
-    };
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtService jwtService) {
+        this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
+    }
 
     /**
      * Configures the security filter chain.
      *
-     * @param jwtAuthFilter the JWT authentication filter
-     * @param http the HttpSecurity to configure
+     * @param http the HttpSecurity
      * @return the configured SecurityFilterChain
-     * @throws Exception if an error occurs during configuration
+     * @throws Exception if an error occurs
      */
     @Bean
-    SecurityFilterChain filterChain(JwtAuthenticationFilter jwtAuthFilter, HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            // Request filter
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .authorizeHttpRequests(requests -> requests
-                // Public URLs
-                .requestMatchers(PUBLIC_URLS).permitAll()
-                // All other requests require authentication
-                .anyRequest().authenticated()
-            )
-            // Session management
-            .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-            // Exception handling
-            .exceptionHandling(ex -> ex
-                // Access denied handler
-                .accessDeniedHandler(new CustomAccessDeniedHandler())
-                // Authentication entry point
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-            );
-        
-        return http.build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Access denied\"}");
+                        }))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(SecurityConstants.AUTH_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     /**
-     * Provides a password encoder bean.
+     * Creates the JWT authentication filter.
+     *
+     * @return the JWT authentication filter
+     */
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtService);
+    }
+
+    /**
+     * Creates a password encoder.
      *
      * @return the password encoder
      */
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     /**
-     * Provides an authentication manager bean.
+     * Creates an authentication manager.
      *
-     * @param authenticationConfiguration the authentication configuration
+     * @param authConfig the authentication configuration
      * @return the authentication manager
-     * @throws Exception if an error occurs during creation
+     * @throws Exception if an error occurs
      */
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    /**
+     * Configures CORS.
+     *
+     * @return the CORS configuration source
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*" ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

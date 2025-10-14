@@ -3,7 +3,6 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.security.service
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// Importando apenas a interface do domínio que vamos implementar
 import com.ocoelhogabriel.manager_user_security.domain.service.ResourceService;
 import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 
@@ -12,10 +11,10 @@ import com.ocoelhogabriel.manager_user_security.infrastructure.security.authoriz
  * using the application ResourceService
  */
 @Service
-public class ResourceServiceAdapter implements com.ocoelhogabriel.manager_user_security.domain.service.ResourceService {
+public class ResourceServiceAdapter implements ResourceService {
 
     @Autowired
-    private com.ocoelhogabriel.manager_user_security.application.service.ResourceService appResourceService;
+    private ResourceService appResourceService;
     
     @Override
     public Resource findByName(String name) {

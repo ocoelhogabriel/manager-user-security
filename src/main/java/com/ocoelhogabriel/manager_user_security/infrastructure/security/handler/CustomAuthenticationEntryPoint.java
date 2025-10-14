@@ -8,7 +8,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.ErrorResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.ErrorResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

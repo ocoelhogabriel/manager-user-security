@@ -21,4 +21,3 @@ EXPOSE 8080
 # Executa o Tomcat na inicialização do container
 CMD ["catalina.sh", "run"]
 # Execute o .war usando Java
-#CMD ["java", "-jar", "/app/sirenev1.war"]

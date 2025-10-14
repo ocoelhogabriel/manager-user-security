@@ -17,7 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.ocoelhogabriel.manager_user_security.application.exception.ApplicationException;
 import com.ocoelhogabriel.manager_user_security.domain.exception.DomainException;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.ErrorResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.ErrorResponse;
 
 /**
  * Global controller advice for handling exceptions.
@@ -125,32 +125,25 @@ public class GlobalExceptionHandler {
      * @return the error response
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
-        
+
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation Error",
                 "Validation failed for request",
-                request.getDescription(false)
+                request.getDescription(false),
+                errors
         );
-        
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", errorResponse.getStatus());
-        body.put("error", errorResponse.getError());
-        body.put("message", errorResponse.getMessage());
-        body.put("path", errorResponse.getPath());
-        body.put("timestamp", errorResponse.getTimestamp());
-        body.put("errors", errors);
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
     /**
