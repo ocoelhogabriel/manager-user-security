@@ -3,6 +3,8 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repo
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.UserEntity;
@@ -44,4 +46,13 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
      * @return true if a user exists with the given email, false otherwise
      */
     boolean existsByEmail(String email);
+    
+    /**
+     * Find a user by ID and eagerly fetch its roles.
+     * 
+     * @param id the user ID to search for
+     * @return the user with eagerly fetched roles if found, null otherwise
+     */
+    @Query("SELECT u FROM UserEntity u LEFT JOIN FETCH u.roles WHERE u.id = :id")
+    UserEntity findByIdWithRoles(@Param("id") Long id);
 }

@@ -38,6 +38,15 @@ public interface PlantService {
     Optional<Plant> findById(Long id);
     
     /**
+     * Get a plant by its ID
+     *
+     * @param id The plant ID
+     * @return The plant with the given ID
+     * @throws com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException if plant not found
+     */
+    Plant getPlantById(Long id);
+    
+    /**
      * Find all plants
      *
      * @return A list of all plants

@@ -100,7 +100,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<Resource> findByPathAndMethod(String path, String method) {
-        return resourceRepository.findByPathAndMethod(path, method).stream().map(Resource.toDomain()).toList();
+        return resourceRepository.findByPathAndMethod(path, method);
     }
 
     /**

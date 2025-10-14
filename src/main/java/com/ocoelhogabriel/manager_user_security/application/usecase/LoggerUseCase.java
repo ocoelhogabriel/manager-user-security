@@ -33,7 +33,7 @@ public class LoggerUseCase {
      * @throws DomainException if log data is invalid
      */
     public Logger createLogEntry(Logger logger) {
-        return loggerService.createLogEntry(logger);
+        return loggerService.logEntry(logger);
     }
 
     /**
@@ -45,7 +45,7 @@ public class LoggerUseCase {
      * @return The created log entry with ID
      */
     public Logger createLogEntry(String serialNumber, LoggerType type, String message) {
-        return loggerService.createLogEntry(serialNumber, type, message);
+        return loggerService.log(serialNumber, type, message);
     }
 
     /**
@@ -88,7 +88,7 @@ public class LoggerUseCase {
      * @return List of log entries within the specified time range
      */
     public List<Logger> getLogEntriesByTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
-        return loggerService.findByTimestampBetween(startTime, endTime);
+        return loggerService.findByTimeRange(startTime, endTime);
     }
 
     /**
@@ -97,7 +97,7 @@ public class LoggerUseCase {
      * @return List of all log entries
      */
     public List<Logger> getAllLogEntries() {
-        return loggerService.findAll();
+        return loggerService.findAllLogs();
     }
 
     /**
@@ -107,7 +107,12 @@ public class LoggerUseCase {
      * @return List of the latest log entries
      */
     public List<Logger> getLatestLogEntries(int limit) {
-        return loggerService.findLatestLogs(limit);
+        // Este método realmente não está presente na interface LoggerService
+        // Vamos ter que usar findAllLogs e limitar manualmente
+        return loggerService.findAllLogs().stream()
+                .sorted((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()))
+                .limit(limit)
+                .toList();
     }
 
     /**
@@ -117,6 +122,6 @@ public class LoggerUseCase {
      * @throws ResourceNotFoundException if log entry not found
      */
     public void deleteLogEntry(Long id) {
-        loggerService.deleteById(id);
+        loggerService.deleteLog(id);
     }
 }

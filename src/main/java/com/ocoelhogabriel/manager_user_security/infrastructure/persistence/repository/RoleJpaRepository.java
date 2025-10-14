@@ -1,11 +1,11 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity;
@@ -49,9 +49,20 @@ public interface RoleJpaRepository extends JpaRepository<RoleEntity, Long> {
      */
     List<RoleEntity> findByUsersId(Long userId);
 
+    /**
+     * Find roles by user ID.
+     *
+     * @param userId the user ID
+     * @return list of roles
+     */
+    @Query("SELECT r FROM RoleEntity r JOIN r.users u WHERE u.id = :userId")
+    List<RoleEntity> findByUserId(@Param("userId") Long userId);
 
-    Collection<Role> findByUserId(Long userId);
-
-    Collection<Object> findByActive(boolean active);
-
+    /**
+     * Find roles by active status.
+     *
+     * @param active the active status
+     * @return list of roles
+     */
+    List<RoleEntity> findByActive(boolean active);
 }

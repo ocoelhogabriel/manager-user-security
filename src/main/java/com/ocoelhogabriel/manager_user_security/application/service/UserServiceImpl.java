@@ -53,6 +53,12 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
+    
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new DomainException("User not found with id: " + id));
+    }
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -155,7 +161,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByIdWithRoles(Long userId) {
-        return userRepository.findByIdWithRoles(userId);
-                .orElseThrow(() -> new DomainException("User not found"));
+        User user = userRepository.findByIdWithRoles(userId);
+        if (user == null) {
+            throw new DomainException("User not found");
+        }
+        return user;
     }
 }

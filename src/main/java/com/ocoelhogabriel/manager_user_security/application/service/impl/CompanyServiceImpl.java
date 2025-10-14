@@ -72,6 +72,13 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
+    public Company getCompanyById(Long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with ID: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<Company> findByCnpj(String cnpj) {
         return companyRepository.findByCnpj(cnpj);
     }

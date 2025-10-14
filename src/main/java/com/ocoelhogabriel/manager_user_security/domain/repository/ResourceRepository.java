@@ -4,13 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.ResourceEntity;
 
 /**
  * Repository interface for Resource entities.
  * Extends the generic Repository interface with Resource-specific methods.
  */
-public interface ResourceRepository extends Repository<ResourceEntity, Long> {
+public interface ResourceRepository extends Repository<Resource, Long> {
     
     /**
      * Finds a resource by name.
@@ -18,7 +17,7 @@ public interface ResourceRepository extends Repository<ResourceEntity, Long> {
      * @param name the name of the resource to find
      * @return an Optional containing the found resource, or empty if not found
      */
-    Optional<ResourceEntity> findByName(String name);
+    Optional<Resource> findByName(String name);
     
     /**
      * Finds resources by version.
@@ -26,7 +25,7 @@ public interface ResourceRepository extends Repository<ResourceEntity, Long> {
      * @param version the version to search for
      * @return a list of resources for the given version
      */
-    List<ResourceEntity> findByVersion(String version);
+    List<Resource> findByVersion(String version);
     
     /**
      * Checks if a resource with the given URL pattern exists.
@@ -43,7 +42,7 @@ public interface ResourceRepository extends Repository<ResourceEntity, Long> {
      * @param url the URL to match
      * @return an Optional containing the found resource, or empty if not found
      */
-    Optional<ResourceEntity> findByMatchingUrl(String url);
+    Optional<Resource> findByMatchingUrl(String url);
 
     /**
      * Finds a resource by URL pattern and HTTP method.
@@ -52,7 +51,7 @@ public interface ResourceRepository extends Repository<ResourceEntity, Long> {
      * @param method the HTTP method
      * @return an Optional containing the found resource, or empty if not found
      */
-    Optional<ResourceEntity> findByUrlPatternAndMethod(String urlPattern, String method);
+    Optional<Resource> findByUrlPatternAndMethod(String urlPattern, String method);
 
     /**
      * Finds resources that match a given URL and HTTP method.
@@ -63,7 +62,14 @@ public interface ResourceRepository extends Repository<ResourceEntity, Long> {
      * @param method the HTTP method to match
      * @return a list of matching resources
      */
-    List<ResourceEntity> findMatchingResources(String url, String method);
+    List<Resource> findMatchingResources(String url, String method);
 
-    List<ResourceEntity> findByPathAndMethod(String path, String method);
+    /**
+     * Finds resources by path and method.
+     *
+     * @param path the path
+     * @param method the HTTP method
+     * @return a list of resources matching the path and method
+     */
+    List<Resource> findByPathAndMethod(String path, String method);
 }

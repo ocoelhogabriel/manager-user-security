@@ -1,12 +1,10 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.impl;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.RoleEntity;
 import org.springframework.stereotype.Component;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
@@ -35,7 +33,7 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
-    public Role save(RoleEntity role) {
+    public Role save(Role role) {
         var roleEntity = roleMapper.toEntity(role);
         var savedEntity = roleRepository.save(roleEntity);
         return roleMapper.toDomain(savedEntity);
@@ -49,6 +47,11 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Override
     public List<Role> findAll() {
         return roleRepository.findAll().stream().map(roleMapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(Role role) {
+        roleRepository.deleteById(role.getId());
     }
 
     @Override

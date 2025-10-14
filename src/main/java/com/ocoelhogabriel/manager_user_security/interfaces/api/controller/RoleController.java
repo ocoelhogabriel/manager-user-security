@@ -1,6 +1,7 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.api.controller;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -263,8 +264,8 @@ public class RoleController {
         }
     )
     public ResponseEntity<List<RoleResponse>> getRolesByUserId(@PathVariable Long userId) {
-        List<Role> roles = roleUseCase.getRolesByUserId(userId);
-        List<RoleResponse> response = roles.stream()
+        Set<Role> roleSet = roleUseCase.getRolesByUserId(userId);
+        List<RoleResponse> response = roleSet.stream()
                 .map(roleMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);

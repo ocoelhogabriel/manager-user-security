@@ -7,10 +7,8 @@ import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException;
+import com.ocoelhogabriel.manager_user_security.domain.repository.PermissionRepository;
 import com.ocoelhogabriel.manager_user_security.domain.service.UserService;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.PermissionEntity;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.PermissionMapper;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.PermissionJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,8 +26,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     private static final Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
 
-    private final PermissionJpaRepository permissionRepository;
-    private final PermissionMapper permissionMapper;
+    private final PermissionRepository permissionRepository;
     private final ResourceService resourceService;
     private final UserService userService;
 
@@ -37,14 +34,12 @@ public class PermissionServiceImpl implements PermissionService {
      * Constructor.
      *
      * @param permissionRepository the permission repository
-     * @param permissionMapper     the permission mapper
      * @param resourceService      the resource service
      * @param userService          the user service
      */
-    public PermissionServiceImpl(PermissionJpaRepository permissionRepository, PermissionMapper permissionMapper, ResourceService resourceService,
+    public PermissionServiceImpl(PermissionRepository permissionRepository, ResourceService resourceService,
             UserService userService) {
         this.permissionRepository = permissionRepository;
-        this.permissionMapper = permissionMapper;
         this.resourceService = resourceService;
         this.userService = userService;
     }
@@ -52,21 +47,19 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional(readOnly = true)
     public List<Permission> findAll() {
-        return permissionRepository.findAll().stream().map(permissionMapper::toDomain).collect(Collectors.toList());
+        return permissionRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Permission findById(Long id) {
-        return permissionRepository.findById(id).map(permissionMapper::toDomain).orElseThrow(() -> new ResourceNotFoundException("Permission", id));
+        return permissionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Permission", id));
     }
 
     @Override
     @Transactional
     public Permission create(Permission permission) {
-        PermissionEntity entity = permissionMapper.toEntity(permission);
-        entity = permissionRepository.save(entity);
-        return permissionMapper.toDomain(entity);
+        return permissionRepository.save(permission);
     }
 
     @Override
@@ -77,9 +70,7 @@ public class PermissionServiceImpl implements PermissionService {
             throw new ResourceNotFoundException("Permission", permission.getId());
         }
 
-        PermissionEntity entity = permissionMapper.toEntity(permission);
-        entity = permissionRepository.save(entity);
-        return permissionMapper.toDomain(entity);
+        return permissionRepository.save(permission);
     }
 
     @Override
@@ -95,7 +86,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional(readOnly = true)
     public List<Permission> findByRoleId(Long roleId) {
-        return permissionRepository.findByRoleId(roleId).stream().map(permissionMapper::toDomain).collect(Collectors.toList());
+        return permissionRepository.findByRoleId(roleId);
     }
 
     @Override
@@ -122,9 +113,8 @@ public class PermissionServiceImpl implements PermissionService {
         List<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toList());
 
         // Check if any permission exists for any of the user's roles and any matching resource
-        Optional<PermissionEntity> permission = permissionRepository.findByRoleIdInAndResourceIdIn(roleIds, resourceIds);
-
-        boolean hasPermission = permission.isPresent();
+        boolean hasPermission = permissionRepository.findByRoleIdsAndResourceId(roleIds, resourceIds.get(0)).size() > 0;
+        
         if (hasPermission) {
             logger.debug("User {} has permission to access {} {}", userId, method, path);
         } else {

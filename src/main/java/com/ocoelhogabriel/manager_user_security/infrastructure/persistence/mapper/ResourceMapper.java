@@ -73,6 +73,7 @@ public class ResourceMapper {
                               "" : domain.getAllowedMethods().iterator().next();
 
         ResourceEntity entity = new ResourceEntity();
+        entity.setId(domain.getId());
         entity.setName(domain.getName());
         entity.setDescription(domain.getDescription());
         entity.setUrlPattern(domain.getUrlPattern());

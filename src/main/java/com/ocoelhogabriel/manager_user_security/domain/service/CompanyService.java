@@ -37,6 +37,15 @@ public interface CompanyService {
     Optional<Company> findById(Long id);
     
     /**
+     * Get a company by its ID
+     *
+     * @param id The company ID
+     * @return The company with the given ID
+     * @throws com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException if company not found
+     */
+    Company getCompanyById(Long id);
+    
+    /**
      * Find a company by its CNPJ
      *
      * @param cnpj The company CNPJ

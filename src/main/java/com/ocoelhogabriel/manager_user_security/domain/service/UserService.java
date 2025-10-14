@@ -29,6 +29,15 @@ public interface UserService {
      * @return an Optional containing the found user, or empty if not found
      */
     Optional<User> findById(Long id);
+    
+    /**
+     * Gets a user by ID or throws an exception if not found.
+     *
+     * @param id the ID of the user to find
+     * @return the user with the specified ID
+     * @throws com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException if user not found
+     */
+    User getUserById(Long id);
 
     /**
      * Finds a user by username.

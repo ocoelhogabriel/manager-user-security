@@ -43,6 +43,11 @@ public class ResourceRepositoryImpl implements ResourceRepository {
     }
 
     @Override
+    public void delete(Resource resource) {
+        resourceRepository.deleteById(resource.getId());
+    }
+
+    @Override
     public Optional<Resource> findById(Long id) {
         return resourceRepository.findById(id)
                 .map(resourceMapper::toDomain);
@@ -110,6 +115,18 @@ public class ResourceRepositoryImpl implements ResourceRepository {
 
         return allResources.stream()
                 .filter(entity -> urlMatches(entity.getUrlPattern(), url))
+                .filter(entity -> methodMatches(entity, method))
+                .map(resourceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Resource> findByPathAndMethod(String path, String method) {
+        // Find all resources with exact path matching and method
+        List<ResourceEntity> allResources = resourceRepository.findAll();
+        
+        return allResources.stream()
+                .filter(entity -> path.equals(entity.getUrlPattern()))
                 .filter(entity -> methodMatches(entity, method))
                 .map(resourceMapper::toDomain)
                 .collect(Collectors.toList());

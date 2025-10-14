@@ -97,4 +97,36 @@ public class ResourceMapper {
 
         return resource;
     }
+    
+    /**
+     * Updates an existing Resource entity with values from UpdateResourceRequest DTO.
+     *
+     * @param request the UpdateResourceRequest DTO with new values
+     * @param existingResource the existing Resource entity to update
+     * @return the updated Resource entity
+     */
+    public Resource updateEntity(UpdateResourceRequest request, Resource existingResource) {
+        if (request == null || existingResource == null) {
+            return existingResource;
+        }
+        
+        // Update the fields from the request
+        existingResource.setName(request.getName());
+        existingResource.setDescription(request.getDescription());
+        existingResource.setUrlPattern(request.getPath());
+        
+        // Update allowed methods
+        if (request.getMethod() != null && !request.getMethod().isEmpty()) {
+            // First remove all existing methods by getting a copy of the current methods
+            Set<String> currentMethods = new HashSet<>(existingResource.getAllowedMethods());
+            for (String method : currentMethods) {
+                existingResource.removeAllowedMethod(method);
+            }
+            
+            // Add the new method
+            existingResource.addAllowedMethod(request.getMethod());
+        }
+        
+        return existingResource;
+    }
 }

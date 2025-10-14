@@ -89,4 +89,10 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
+    
+    @Override
+    public User findByIdWithRoles(Long userId) {
+        UserEntity userEntity = userRepository.findByIdWithRoles(userId);
+        return userMapper.toDomain(userEntity);
+    }
 }

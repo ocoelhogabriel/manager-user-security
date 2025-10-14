@@ -70,6 +70,13 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     @Transactional(readOnly = true)
+    public Plant getPlantById(Long id) {
+        return plantRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found with ID: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Plant> findByCompanyId(Long companyId) {
         // Check if company exists before searching for its plants
         if (!companyRepository.findById(companyId).isPresent()) {

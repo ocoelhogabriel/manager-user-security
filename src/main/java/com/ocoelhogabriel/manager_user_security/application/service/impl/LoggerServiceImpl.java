@@ -29,7 +29,7 @@ public class LoggerServiceImpl implements LoggerService {
 
     @Override
     @Transactional
-    public Logger createLogEntry(Logger logger) {
+    public Logger logEntry(Logger logger) {
         if (!logger.isValid()) {
             throw new DomainException("Invalid logger data");
         }
@@ -39,7 +39,7 @@ public class LoggerServiceImpl implements LoggerService {
 
     @Override
     @Transactional
-    public Logger createLogEntry(String serialNumber, LoggerType type, String message) {
+    public Logger log(String serialNumber, LoggerType type, String message) {
         Logger logger = new Logger.Builder()
                 .withTimestamp(LocalDateTime.now())
                 .withSerialNumber(serialNumber)
@@ -70,25 +70,19 @@ public class LoggerServiceImpl implements LoggerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Logger> findByTimestampBetween(LocalDateTime startTime, LocalDateTime endTime) {
+    public List<Logger> findByTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
         return loggerRepository.findByTimestampBetween(startTime, endTime);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Logger> findAll() {
+    public List<Logger> findAllLogs() {
         return loggerRepository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Logger> findLatestLogs(int limit) {
-        return loggerRepository.findLatestLogs(limit);
-    }
-
-    @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteLog(Long id) {
         if (!loggerRepository.findById(id).isPresent()) {
             throw new ResourceNotFoundException("Log entry not found with ID: " + id);
         }

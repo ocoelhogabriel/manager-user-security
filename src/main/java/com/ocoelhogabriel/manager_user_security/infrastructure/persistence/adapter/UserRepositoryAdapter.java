@@ -91,4 +91,10 @@ public class UserRepositoryAdapter implements UserRepository {
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
     }
+    
+    @Override
+    public User findByIdWithRoles(Long userId) {
+        UserEntity userEntity = userJpaRepository.findByIdWithRoles(userId);
+        return userMapper.toDomain(userEntity);
+    }
 }

@@ -3,15 +3,15 @@ package com.ocoelhogabriel.manager_user_security.domain.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.Collections;
 
 /**
- * Resource domain entity representing a protected resource in the system.
- * Resources are elements that can be accessed via the API and may require authorization.
+ * Resource domain entity representing a protected resource in the system. Resources are elements that can be accessed via the API and may require
+ * authorization.
  */
 public class Resource {
-    private final Long id;
+    // Changed from final to allow modification through setter
+    private Long id;
     private String name;
     private String description;
     private String urlPattern;
@@ -21,10 +21,10 @@ public class Resource {
     /**
      * Creates a new Resource with the specified name and URL pattern.
      *
-     * @param name the name of the resource
+     * @param name        the name of the resource
      * @param description the description of the resource
-     * @param urlPattern the URL pattern of the resource
-     * @param version the API version of the resource
+     * @param urlPattern  the URL pattern of the resource
+     * @param version     the API version of the resource
      */
     public Resource(Long id, String name, String description, String urlPattern, String version) {
         this.id = id;
@@ -38,11 +38,11 @@ public class Resource {
     /**
      * Creates a Resource with an existing ID.
      *
-     * @param id the ID of the resource
-     * @param name the name of the resource
-     * @param description the description of the resource
-     * @param urlPattern the URL pattern of the resource
-     * @param version the API version of the resource
+     * @param id             the ID of the resource
+     * @param name           the name of the resource
+     * @param description    the description of the resource
+     * @param urlPattern     the URL pattern of the resource
+     * @param version        the API version of the resource
      * @param allowedMethods the HTTP methods allowed for this resource
      */
     public Resource(Long id, String name, String description, String urlPattern, String version, Set<String> allowedMethods) {
@@ -54,8 +54,20 @@ public class Resource {
         this.allowedMethods = allowedMethods != null ? new HashSet<>(allowedMethods) : new HashSet<>();
     }
 
+    /**
+     * Default constructor for frameworks.
+     */
+    public Resource() {
+        this.allowedMethods = new HashSet<>();
+    }
+
     public Long getId() {
         return id;
+    }
+
+    // Modified setter to ensure it works properly
+    public void setId(Long newId) {
+        this.id = newId;
     }
 
     public String getName() {
@@ -126,8 +138,10 @@ public class Resource {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Resource resource = (Resource) o;
         return Objects.equals(id, resource.id);
     }
@@ -136,4 +150,5 @@ public class Resource {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
