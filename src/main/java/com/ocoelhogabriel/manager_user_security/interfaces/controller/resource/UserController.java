@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.resource;
+package com.ocoelhogabriel.manager_user_security.interfaces.controller.resource;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.exception.DomainException;
 import com.ocoelhogabriel.manager_user_security.domain.service.UserService;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CreateUserRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.UpdatePasswordRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.UpdateUserRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.UserResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CreateUserRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.UpdatePasswordRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.UpdateUserRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.UserResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

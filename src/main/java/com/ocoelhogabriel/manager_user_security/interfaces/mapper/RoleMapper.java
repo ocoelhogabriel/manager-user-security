@@ -1,17 +1,16 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
+package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
+
+import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
+import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
+import com.ocoelhogabriel.manager_user_security.domain.service.PermissionService;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.permission.PermissionResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.role.CreateRoleRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.role.RoleResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.role.UpdateRoleRequest;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
-import com.ocoelhogabriel.manager_user_security.application.service.PermissionService;
-import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
-import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.permission.PermissionResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.role.CreateRoleRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.role.RoleResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.role.UpdateRoleRequest;
 
 /**
  * Mapper for Role entities and DTOs.

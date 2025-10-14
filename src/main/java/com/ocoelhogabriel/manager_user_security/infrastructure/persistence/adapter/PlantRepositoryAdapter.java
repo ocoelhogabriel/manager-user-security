@@ -53,4 +53,9 @@ public class PlantRepositoryAdapter implements PlantRepository {
     public void deleteById(Long id) {
         plantJpaRepository.deleteById(id);
     }
+
+    @Override
+    public boolean existsByNameAndCompanyId(String name, Long companyId) {
+        return plantJpaRepository.existsByNameAndCompanyId(name, companyId);
+    }
 }

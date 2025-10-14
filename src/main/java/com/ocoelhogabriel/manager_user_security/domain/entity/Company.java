@@ -13,6 +13,9 @@ public class Company {
     private String name;
     private String tradingName;
     private String phone;
+
+    public Company() {
+    }
     
     // Private constructor for builder pattern
     private Company(Builder builder) {

@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.dto;
+package com.ocoelhogabriel.manager_user_security.interfaces.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.dto;
+package com.ocoelhogabriel.manager_user_security.interfaces.dto;
 
 import java.util.HashSet;
 import java.util.Set;

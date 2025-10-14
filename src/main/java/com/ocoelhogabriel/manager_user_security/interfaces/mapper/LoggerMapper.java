@@ -1,8 +1,8 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
+package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Logger;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.LoggerRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.LoggerResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.LoggerRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.LoggerResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

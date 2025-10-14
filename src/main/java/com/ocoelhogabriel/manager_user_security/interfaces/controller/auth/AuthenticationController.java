@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.auth;
+package com.ocoelhogabriel.manager_user_security.interfaces.controller.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ocoelhogabriel.manager_user_security.application.usecase.AuthenticationUseCase;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.AuthenticationRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.AuthenticationResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.TokenValidationResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.AuthenticationRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.AuthenticationResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.TokenValidationResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

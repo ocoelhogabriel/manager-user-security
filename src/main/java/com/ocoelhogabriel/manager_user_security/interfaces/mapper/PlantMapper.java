@@ -1,11 +1,11 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
+package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Plant;
 import com.ocoelhogabriel.manager_user_security.domain.service.CompanyService;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.PlantRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.PlantResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.PlantUpdateRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.PlantRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.PlantResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.PlantUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

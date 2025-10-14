@@ -2,10 +2,10 @@ package com.ocoelhogabriel.manager_user_security.interfaces.controller;
 
 import com.ocoelhogabriel.manager_user_security.application.usecase.CoverageUseCase;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Coverage;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CoverageRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CoverageResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CoverageUpdateRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.mapper.CoverageMapper;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageUpdateRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.CoverageMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

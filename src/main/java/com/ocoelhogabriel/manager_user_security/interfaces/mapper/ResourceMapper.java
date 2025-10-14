@@ -1,13 +1,13 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
+package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
 import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.resource.CreateResourceRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.resource.ResourceResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.resource.UpdateResourceRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.CreateResourceRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.ResourceResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.UpdateResourceRequest;
 
 /**
  * Mapper for Resource entities and DTOs.

@@ -1,10 +1,10 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.dto.role;
+package com.ocoelhogabriel.manager_user_security.interfaces.dto.role;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.permission.PermissionResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.permission.PermissionResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

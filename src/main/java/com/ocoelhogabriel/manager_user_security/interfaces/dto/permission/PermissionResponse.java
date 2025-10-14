@@ -1,6 +1,6 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.dto.permission;
+package com.ocoelhogabriel.manager_user_security.interfaces.dto.permission;
 
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.resource.ResourceResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.ResourceResponse;
 
 /**
  * Data Transfer Object for permission responses.

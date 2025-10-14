@@ -1,6 +1,6 @@
 package com.ocoelhogabriel.manager_user_security.application.usecase;
 
-import com.ocoelhogabriel.manager_user_security.application.service.RoleService;
+import com.ocoelhogabriel.manager_user_security.domain.service.RoleService;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException;

@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.dto.resource;
+package com.ocoelhogabriel.manager_user_security.interfaces.dto.resource;
 
 /**
  * Data Transfer Object for resource responses.

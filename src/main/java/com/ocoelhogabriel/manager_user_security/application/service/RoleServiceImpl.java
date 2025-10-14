@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ocoelhogabriel.manager_user_security.application.service.PermissionService;
-import com.ocoelhogabriel.manager_user_security.application.service.ResourceService;
+import com.ocoelhogabriel.manager_user_security.domain.service.PermissionService;
+import com.ocoelhogabriel.manager_user_security.domain.service.ResourceService;
 import com.ocoelhogabriel.manager_user_security.domain.service.RoleService;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;

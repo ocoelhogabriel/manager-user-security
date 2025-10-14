@@ -20,10 +20,10 @@ import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.exception.AuthenticationException;
 import com.ocoelhogabriel.manager_user_security.domain.service.AuthenticationService;
 import com.ocoelhogabriel.manager_user_security.domain.service.UserService;
-import com.ocoelhogabriel.manager_user_security.infrastructure.auth.jwt.JwtTokenProvider;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.AuthenticationResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.TokenValidationResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.UserRoleDto;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtTokenProvider;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.AuthenticationResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.TokenValidationResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.UserRoleDto;
 
 /**
  * Implementation of the Authentication use case.

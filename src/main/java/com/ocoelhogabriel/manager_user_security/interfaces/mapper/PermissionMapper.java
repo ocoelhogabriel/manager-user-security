@@ -1,20 +1,17 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
+package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
+import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
+import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
+import com.ocoelhogabriel.manager_user_security.domain.service.ResourceService;
+import com.ocoelhogabriel.manager_user_security.domain.service.RoleService;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.permission.CreatePermissionRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.permission.PermissionResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.permission.UpdatePermissionRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
-
-import com.ocoelhogabriel.manager_user_security.application.service.ResourceService;
-import com.ocoelhogabriel.manager_user_security.application.service.RoleService;
-import com.ocoelhogabriel.manager_user_security.domain.entity.Permission;
-import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
-import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.permission.CreatePermissionRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.permission.PermissionResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.permission.UpdatePermissionRequest;
 
 /**
  * Mapper for Permission entities and DTOs.

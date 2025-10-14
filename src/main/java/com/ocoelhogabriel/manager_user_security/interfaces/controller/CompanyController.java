@@ -2,10 +2,10 @@ package com.ocoelhogabriel.manager_user_security.interfaces.controller;
 
 import com.ocoelhogabriel.manager_user_security.application.usecase.CompanyUseCase;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CompanyRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CompanyResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CompanyUpdateRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.mapper.CompanyMapper;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CompanyRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CompanyResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CompanyUpdateRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.CompanyMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

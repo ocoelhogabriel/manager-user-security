@@ -1,12 +1,12 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.api.mapper;
+package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Coverage;
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Plant;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CoverageRequest;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CoverageResponse;
-import com.ocoelhogabriel.manager_user_security.interfaces.api.dto.CoverageUpdateRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageRequest;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageResponse;
+import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageUpdateRequest;
 
 import org.springframework.stereotype.Component;
 
