@@ -1,15 +1,14 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization;
 
-import java.util.Objects;
-import java.util.Optional; // Adicionado
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.domain.service.ResourceService;
 import com.ocoelhogabriel.manager_user_security.domain.service.RolePermissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Component for evaluating user permissions
@@ -18,6 +17,7 @@ import com.ocoelhogabriel.manager_user_security.domain.service.RolePermissionSer
 public class PermissionEvaluator {
 
     @Autowired
+    @Qualifier("resourceServiceImpl")
     private ResourceService resourceService;
 
     @Autowired

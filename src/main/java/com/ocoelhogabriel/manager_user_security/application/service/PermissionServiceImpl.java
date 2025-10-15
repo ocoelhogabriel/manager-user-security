@@ -11,6 +11,7 @@ import com.ocoelhogabriel.manager_user_security.domain.service.ResourceService;
 import com.ocoelhogabriel.manager_user_security.domain.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,9 @@ public class PermissionServiceImpl implements PermissionService {
     private final ResourceService resourceService;
     private final UserService userService;
 
-    public PermissionServiceImpl(PermissionRepository permissionRepository, ResourceService resourceService, UserService userService) {
+    public PermissionServiceImpl(PermissionRepository permissionRepository,
+                                @Qualifier("resourceServiceImpl") ResourceService resourceService,
+                                UserService userService) {
         this.permissionRepository = permissionRepository;
         this.resourceService = resourceService;
         this.userService = userService;

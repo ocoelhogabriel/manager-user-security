@@ -54,5 +54,20 @@ public class ResourceServiceAdapter implements ResourceService {
         return resourceRepository.findMatchingResources(url, method);
     }
 
+    @Override
+    public List<Resource> findByVersion(String version) {
+        return resourceRepository.findByVersion(version);
+    }
+
+    @Override
+    public Optional<Resource> findByUrlPattern(String urlPattern) {
+        return resourceRepository.findByMatchingUrl(urlPattern);
+    }
+
+    @Override
+    public boolean existsByUrlPattern(String urlPattern) {
+        return resourceRepository.existsByUrlPattern(urlPattern);
+    }
+
     // O método findByPathAndMethod foi removido
 }

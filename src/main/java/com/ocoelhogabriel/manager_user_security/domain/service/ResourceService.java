@@ -68,4 +68,25 @@ public interface ResourceService {
      * @return a list of matching resources
      */
     List<Resource> findMatchingResources(String url, String method);
+
+    /**
+     * Find resources by version.
+     * @param version the version to search for
+     * @return a list of resources for the given version
+     */
+    List<Resource> findByVersion(String version);
+
+    /**
+     * Find a resource by URL pattern.
+     * @param urlPattern the URL pattern to search for
+     * @return an Optional containing the resource or empty if not found
+     */
+    Optional<Resource> findByUrlPattern(String urlPattern);
+
+    /**
+     * Checks if a resource with the given URL pattern exists.
+     * @param urlPattern the URL pattern to check
+     * @return true if a resource with the given URL pattern exists, false otherwise
+     */
+    boolean existsByUrlPattern(String urlPattern);
 }

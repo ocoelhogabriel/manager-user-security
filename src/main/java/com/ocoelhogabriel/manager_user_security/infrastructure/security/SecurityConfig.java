@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -58,6 +59,9 @@ public class SecurityConfig {
         this.jwtManager = jwtManager;
     }
 
+    @Value("${api.security.public-urls}")
+    private String[] publicUrls;
+
     /**
      * Configures the security filter chain.
      *
@@ -83,7 +87,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"error\": \"Access denied\"}");
                         }))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(SecurityConstants.AUTH_WHITELIST).permitAll()
+                        .requestMatchers(publicUrls).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

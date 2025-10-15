@@ -98,6 +98,25 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceRepository.findMatchingResources(url, method);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Resource> findByVersion(String version) {
+        return resourceRepository.findByVersion(version);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Resource> findByUrlPattern(String urlPattern) {
+        // Supondo que o método findByMatchingUrl faz o papel de busca por padrão
+        return resourceRepository.findByMatchingUrl(urlPattern);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByUrlPattern(String urlPattern) {
+        return resourceRepository.existsByUrlPattern(urlPattern);
+    }
+
     /**
      * Helper method to get the first allowed method from a resource.
      *

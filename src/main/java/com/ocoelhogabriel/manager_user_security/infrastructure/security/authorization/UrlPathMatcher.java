@@ -2,15 +2,12 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.security.authori
 
 import java.util.Objects;
 
-import org.springframework.stereotype.Component;
-
 import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.valueobject.HttpMethod;
 
 /**
  * Utility class for validating and classifying URLs
  */
-@Component
 public class UrlPathMatcher {
 
     private final Resource resource;

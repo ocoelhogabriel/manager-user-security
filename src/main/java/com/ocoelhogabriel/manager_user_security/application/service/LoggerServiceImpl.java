@@ -7,6 +7,7 @@ import com.ocoelhogabriel.manager_user_security.domain.repository.LoggerReposito
 import com.ocoelhogabriel.manager_user_security.domain.service.LoggerService;
 import com.ocoelhogabriel.manager_user_security.domain.valueobject.LoggerType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

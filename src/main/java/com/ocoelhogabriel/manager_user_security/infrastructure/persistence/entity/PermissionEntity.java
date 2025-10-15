@@ -57,6 +57,18 @@ public class PermissionEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "can_read", nullable = false)
+    private boolean canRead;
+
+    @Column(name = "can_create", nullable = false)
+    private boolean canCreate;
+
+    @Column(name = "can_edit", nullable = false)
+    private boolean canEdit;
+
+    @Column(name = "can_delete", nullable = false)
+    private boolean canDelete;
+
     /**
      * Default constructor.
      */
@@ -155,6 +167,38 @@ public class PermissionEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isCanRead() {
+        return canRead;
+    }
+
+    public void setCanRead(boolean canRead) {
+        this.canRead = canRead;
+    }
+
+    public boolean isCanCreate() {
+        return canCreate;
+    }
+
+    public void setCanCreate(boolean canCreate) {
+        this.canCreate = canCreate;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
     }
 
     @Override

@@ -136,6 +136,16 @@ public class Resource {
         return allowedMethods.contains(method.toUpperCase());
     }
 
+    /**
+     * Permite modificar os métodos permitidos para o recurso.
+     */
+    public void setAllowedMethods(Set<String> allowedMethods) {
+        this.allowedMethods.clear();
+        if (allowedMethods != null) {
+            this.allowedMethods.addAll(allowedMethods);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

@@ -29,3 +29,5 @@ public class UserSecurityApplication extends SpringBootServletInitializer {
         return application.sources(UserSecurityApplication.class);
     }
 }
+
+

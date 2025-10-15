@@ -13,6 +13,7 @@ import com.ocoelhogabriel.manager_user_security.domain.service.CoverageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public class CoverageServiceImpl implements CoverageService {
 
     @Autowired
     public CoverageServiceImpl(
-            CoverageRepository coverageRepository,
+            @Qualifier("coverageRepositoryAdapter") CoverageRepository coverageRepository,
             UserRepository userRepository,
             CompanyRepository companyRepository,
             PlantRepository plantRepository) {

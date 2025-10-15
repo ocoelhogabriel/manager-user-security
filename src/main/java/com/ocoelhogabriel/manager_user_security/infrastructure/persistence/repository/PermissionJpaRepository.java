@@ -79,4 +79,15 @@ public interface PermissionJpaRepository extends JpaRepository<PermissionEntity,
     List<PermissionEntity> findByRoleIdInAndResourceId(List<Long> roleIds, Long resourceId);
 
     Optional<PermissionEntity> findByRoleIdInAndResourceIdIn(List<Long> roleIds, List<Long> resourceIds);
+
+    /**
+     * Find permissions by multiple role IDs and resource ID.
+     */
+    @Query("SELECT p FROM PermissionEntity p WHERE p.role.id IN :roleIds AND p.resource.id = :resourceId")
+    List<PermissionEntity> findByRoleIdsAndResourceId(@Param("roleIds") List<Long> roleIds, @Param("resourceId") Long resourceId);
+
+    /**
+     * Find permissions where canRead is true.
+     */
+    List<PermissionEntity> findByCanReadTrue();
 }

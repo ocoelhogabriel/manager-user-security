@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Component("loggerRepositoryAdapter")
 public class LoggerRepositoryAdapter implements LoggerRepository {
 
     private final LoggerJpaRepository loggerJpaRepository;

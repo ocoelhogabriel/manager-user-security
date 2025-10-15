@@ -58,7 +58,7 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, Lon
      * @param method the HTTP method to match
      * @return a list of matching resources
      */
-    @Query("SELECT r FROM ResourceEntity r WHERE :url LIKE r.urlPattern AND :method MEMBER OF r.allowedMethods")
+    @Query("SELECT r FROM ResourceEntity r WHERE :url LIKE r.urlPattern AND r.allowedMethods LIKE CONCAT('%', :method, '%')")
     List<ResourceEntity> findMatchingResources(@Param("url") String url, @Param("method") String method);
 
     /**
@@ -68,6 +68,6 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, Lon
      * @param method the HTTP method
      * @return a list of resources matching the criteria
      */
-    @Query("SELECT r FROM ResourceEntity r WHERE r.urlPattern = :urlPattern AND :method MEMBER OF r.allowedMethods")
+    @Query("SELECT r FROM ResourceEntity r WHERE r.urlPattern = :urlPattern AND r.allowedMethods LIKE CONCAT('%', :method, '%')")
     List<ResourceEntity> findByUrlPatternAndAllowedMethodsContains(@Param("urlPattern") String urlPattern, @Param("method") String method);
 }
