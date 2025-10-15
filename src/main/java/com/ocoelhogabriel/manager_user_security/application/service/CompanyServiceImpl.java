@@ -92,9 +92,8 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     @Transactional
     public void deleteCompany(Long id) {
-        if (!companyRepository.findById(id).isPresent()) {
-            throw new ResourceNotFoundException("Company not found with ID: " + id);
-        }
+        // Use getCompanyById to ensure the company exists or throw ResourceNotFoundException
+        getCompanyById(id);
         companyRepository.deleteById(id);
     }
 }

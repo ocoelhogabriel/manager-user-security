@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.controller;
+package com.ocoelhogabriel.manager_user_security.interfaces.controllers;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
 import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +33,6 @@ public class CompanyController {
     private final CompanyService companyService;
     private final CompanyMapper companyMapper;
 
-    @Autowired
     public CompanyController(CompanyService companyService, CompanyMapper companyMapper) {
         this.companyService = companyService;
         this.companyMapper = companyMapper;
@@ -54,7 +52,7 @@ public class CompanyController {
         }
     )
     public ResponseEntity<CompanyResponse> createCompany(@Valid @RequestBody CompanyRequest request) {
-        Company company = companyMapper.toEntity(request);
+        Company company = companyMapper.toDomain(request);
         Company createdCompany = companyService.registerCompany(company);
         CompanyResponse response = companyMapper.toResponse(createdCompany);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -75,7 +73,7 @@ public class CompanyController {
         }
     )
     public ResponseEntity<CompanyResponse> updateCompany(@Valid @RequestBody CompanyUpdateRequest request) {
-        Company company = companyMapper.toEntity(request);
+        Company company = companyMapper.toDomain(request);
         Company updatedCompany = companyService.updateCompany(company);
         CompanyResponse response = companyMapper.toResponse(updatedCompany);
         return ResponseEntity.ok(response);
@@ -143,7 +141,7 @@ public class CompanyController {
         responses = {
             @ApiResponse(responseCode = "204", description = "Company deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Company not found"),
-            @ApiResponse(responseCode = "403", "Forbidden")
+            @ApiResponse(responseCode = "403", description = "Forbidden")
         }
     )
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {

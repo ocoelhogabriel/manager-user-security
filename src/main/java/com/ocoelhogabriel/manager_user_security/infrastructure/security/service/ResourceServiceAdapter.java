@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional; // Adicionado
 
 @Service
 public class ResourceServiceAdapter implements ResourceService {
@@ -29,8 +30,8 @@ public class ResourceServiceAdapter implements ResourceService {
     }
 
     @Override
-    public Resource findByName(String name) {
-        return resourceRepository.findByName(name).orElse(null);
+    public Optional<Resource> findByName(String name) { // Corrigido
+        return resourceRepository.findByName(name);
     }
 
     @Override
@@ -53,8 +54,5 @@ public class ResourceServiceAdapter implements ResourceService {
         return resourceRepository.findMatchingResources(url, method);
     }
 
-    @Override
-    public List<Resource> findByPathAndMethod(String path, String method) {
-        return resourceRepository.findByPathAndMethod(path, method);
-    }
+    // O método findByPathAndMethod foi removido
 }

@@ -12,8 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * This application provides authentication, authorization and user management functionality.
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.ocoelhogabriel.manager_user_security"})
-@EnableJpaRepositories(basePackages = {"com.ocoelhogabriel.manager_user_security.infrastructure.repository"})
+@EnableJpaRepositories(basePackages = {"com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository"})
 public class UserSecurityApplication extends SpringBootServletInitializer {
 
     /**

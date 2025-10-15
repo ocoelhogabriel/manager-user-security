@@ -3,19 +3,16 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.security.authori
 /**
  * Simple implementation of Resource for the UrlPathMatcher
  */
-public class Resource {
-    private final String name;
-    private final String description;
-
+public record Resource(
+        String name,
+        String description) {
     /**
      * Creates a new Resource with the specified name and description.
      *
-     * @param name the name of the resource
+     * @param name        the name of the resource
      * @param description the description of the resource
      */
-    public Resource(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public Resource {
     }
 
     /**
@@ -23,6 +20,7 @@ public class Resource {
      *
      * @return the name of the resource
      */
+    @Override
     public String name() {
         return name;
     }
@@ -32,6 +30,7 @@ public class Resource {
      *
      * @return the description of the resource
      */
+    @Override
     public String description() {
         return description;
     }

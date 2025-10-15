@@ -1,7 +1,7 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.security;
 
 import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtAuthenticationFilter;
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtService;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtManager;
 import com.ocoelhogabriel.manager_user_security.infrastructure.security.service.UserDetailsServiceImpl;
 import com.ocoelhogabriel.manager_user_security.infrastructure.security.util.SecurityConstants;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -26,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Centralized configuration class for Spring Security.
@@ -44,17 +45,17 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
-    private final JwtService jwtService;
+    private final JwtManager jwtManager;
 
     /**
      * Constructor for SecurityConfig.
      *
      * @param userDetailsService the user details service
-     * @param jwtService the JWT service
+     * @param jwtManager the JWT manager
      */
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtService jwtService) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtManager jwtManager) {
         this.userDetailsService = userDetailsService;
-        this.jwtService = jwtService;
+        this.jwtManager = jwtManager;
     }
 
     /**
@@ -96,7 +97,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtService);
+        return new JwtAuthenticationFilter(jwtManager);
     }
 
     /**
@@ -129,10 +130,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*" ));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setExposedHeaders(List.of("x-auth-token"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

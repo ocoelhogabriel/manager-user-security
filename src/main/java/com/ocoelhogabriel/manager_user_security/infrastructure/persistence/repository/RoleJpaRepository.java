@@ -50,15 +50,6 @@ public interface RoleJpaRepository extends JpaRepository<RoleEntity, Long> {
     List<RoleEntity> findByUsersId(Long userId);
 
     /**
-     * Find roles by user ID.
-     *
-     * @param userId the user ID
-     * @return list of roles
-     */
-    @Query("SELECT r FROM RoleEntity r JOIN r.users u WHERE u.id = :userId")
-    List<RoleEntity> findByUserId(@Param("userId") Long userId);
-
-    /**
      * Find roles by active status.
      *
      * @param active the active status

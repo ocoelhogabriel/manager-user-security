@@ -3,8 +3,8 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repo
 import com.ocoelhogabriel.manager_user_security.domain.entity.Coverage;
 import com.ocoelhogabriel.manager_user_security.domain.repository.CoverageRepository;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.CoverageEntity;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.CoverageMapper;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.CoverageJpaRepository;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.CoverageMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -31,7 +31,7 @@ public class CoverageRepositoryImpl implements CoverageRepository {
     @Override
     @Transactional
     public Coverage save(Coverage coverage) {
-        CoverageEntity coverageEntity = coverageMapper.toEntity(coverage);
+        CoverageEntity coverageEntity = coverageMapper.toPersistenceEntity(coverage);
         coverageEntity = coverageJpaRepository.save(coverageEntity);
         return coverageMapper.toDomain(coverageEntity);
     }

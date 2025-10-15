@@ -1,17 +1,14 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.adapter;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.repository.UserRepository;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.UserEntity;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.UserMapper;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.UserJpaRepository;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.UserMapper;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Adapter implementation of UserRepository.
@@ -25,7 +22,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     /**
      * Constructor for UserRepositoryAdapter.
-     * 
+     *
      * @param userJpaRepository the JPA repository
      * @param userMapper the mapper between entities and domain objects
      */
@@ -36,7 +33,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public User save(User user) {
-        UserEntity userEntity = userMapper.toEntity(user);
+        UserEntity userEntity = userMapper.toPersistenceEntity(user);
         UserEntity savedEntity = userJpaRepository.save(userEntity);
         return userMapper.toDomain(savedEntity);
     }
@@ -51,12 +48,12 @@ public class UserRepositoryAdapter implements UserRepository {
     public List<User> findAll() {
         return userJpaRepository.findAll().stream()
                 .map(userMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public void delete(User user) {
-        UserEntity userEntity = userMapper.toEntity(user);
+        UserEntity userEntity = userMapper.toPersistenceEntity(user);
         userJpaRepository.delete(userEntity);
     }
 
@@ -91,10 +88,10 @@ public class UserRepositoryAdapter implements UserRepository {
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
     }
-    
+
     @Override
-    public User findByIdWithRoles(Long userId) {
-        UserEntity userEntity = userJpaRepository.findByIdWithRoles(userId);
-        return userMapper.toDomain(userEntity);
+    public Optional<User> findByIdWithRoles(Long userId) {
+        return userJpaRepository.findByIdWithRoles(userId)
+                .map(userMapper::toDomain);
     }
 }

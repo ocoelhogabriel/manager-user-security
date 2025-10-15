@@ -1,6 +1,7 @@
 package com.ocoelhogabriel.manager_user_security.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 
@@ -29,9 +30,9 @@ public interface ResourceService {
      * Find a resource by name.
      *
      * @param name the resource name
-     * @return the resource or null if not found
+     * @return an Optional containing the resource or empty if not found
      */
-    Resource findByName(String name);
+    Optional<Resource> findByName(String name);
 
     /**
      * Create a new resource.
@@ -67,6 +68,4 @@ public interface ResourceService {
      * @return a list of matching resources
      */
     List<Resource> findMatchingResources(String url, String method);
-
-    List<Resource> findByPathAndMethod(String path, String method);
 }

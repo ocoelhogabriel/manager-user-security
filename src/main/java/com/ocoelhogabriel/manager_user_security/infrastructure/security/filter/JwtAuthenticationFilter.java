@@ -1,7 +1,14 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.security.filter;
 
-import java.io.IOException;
-
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.PermissionEvaluator;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.UrlPathMatcher;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.handler.CustomAccessDeniedHandler;
+import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtManager;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,25 +20,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import java.io.IOException;
 
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.PermissionEvaluator;
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization.UrlPathMatcher;
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.handler.CustomAccessDeniedHandler;
-import com.ocoelhogabriel.manager_user_security.infrastructure.security.jwt.JwtService;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-/**
- * JWT authentication filter for validating and processing JWT tokens in requests
- */
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -39,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
 
     @Autowired
-    private JwtService jwtService;
+    private JwtManager jwtManager; // Corrigido
     
     @Autowired
     private UserDetailsService userDetailsService;
@@ -57,22 +49,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String requestUri = request.getRequestURI();
             String method = request.getMethod();
             
-            // If no token is present, pass to next filter
             if (token == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // Validate token and load user details
-            String username = jwtService.validateToken(token);
+            String username = jwtManager.validateToken(token); // Corrigido
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // Create authentication token and set in security context
             UsernamePasswordAuthenticationToken authToken = 
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            // Get current authentication
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
                 accessDeniedHandler.handle(request, response, 
@@ -80,16 +68,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Extract role from authentication
             String role = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .findFirst()
                     .orElse(null);
 
-            // Validate URL and check permissions
             UrlPathMatcher urlMatcher = UrlPathMatcher.validateUrl(requestUri, method);
             
-            // Handle URL validation failure
             if (urlMatcher.getMessage().startsWith("Error") || 
                 urlMatcher.getMessage().startsWith("Invalid")) {
                 accessDeniedHandler.handle(request, response, 
@@ -97,7 +82,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             
-            // Check permission
             boolean hasPermission = permissionEvaluator.checkPermission(role, urlMatcher, method);
             if (!hasPermission) {
                 accessDeniedHandler.handle(request, response, 
@@ -112,12 +96,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    /**
-     * Extracts token from request header
-     * 
-     * @param request The HTTP request
-     * @return The extracted token or null if not present
-     */
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

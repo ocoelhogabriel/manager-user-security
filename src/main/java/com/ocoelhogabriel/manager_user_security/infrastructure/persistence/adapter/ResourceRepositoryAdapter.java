@@ -2,14 +2,13 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.adap
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
 import com.ocoelhogabriel.manager_user_security.domain.repository.ResourceRepository;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.ResourceMapper;
+import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.ResourceEntity;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.ResourceJpaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.ResourceMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ResourceRepositoryAdapter implements ResourceRepository {
@@ -17,7 +16,6 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
     private final ResourceJpaRepository resourceJpaRepository;
     private final ResourceMapper resourceMapper;
 
-    @Autowired
     public ResourceRepositoryAdapter(ResourceJpaRepository resourceJpaRepository, ResourceMapper resourceMapper) {
         this.resourceJpaRepository = resourceJpaRepository;
         this.resourceMapper = resourceMapper;
@@ -25,7 +23,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     public Resource save(Resource resource) {
-        var entity = resourceMapper.toEntity(resource);
+        var entity = resourceMapper.toPersistenceEntity(resource);
         var savedEntity = resourceJpaRepository.save(entity);
         return resourceMapper.toDomain(savedEntity);
     }
@@ -44,7 +42,12 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
     public List<Resource> findAll() {
         return resourceJpaRepository.findAll().stream()
                 .map(resourceMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Override
+    public void delete(Resource resource) {
+        resourceJpaRepository.delete(resourceMapper.toPersistenceEntity(resource));
     }
 
     @Override
@@ -54,29 +57,36 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     public Optional<Resource> findByUrlPatternAndMethod(String urlPattern, String method) {
-        return resourceJpaRepository.findByUrlPatternAndAllowedMethodsContains(urlPattern, method)
-                .map(resourceMapper::toDomain);
+        List<ResourceEntity> entities = resourceJpaRepository.findByUrlPatternAndAllowedMethodsContains(urlPattern, method);
+        return entities.stream().findFirst().map(resourceMapper::toDomain);
     }
 
     @Override
     public List<Resource> findMatchingResources(String url, String method) {
-        // This logic might be complex and better suited for a custom query in the JpaRepository
-        // For now, we delegate to a method that should exist on the JpaRepository.
         return resourceJpaRepository.findMatchingResources(url, method).stream()
                 .map(resourceMapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Resource> findByPathAndMethod(String path, String method) {
-        // Assuming this is a more specific query
-        return resourceJpaRepository.findByUrlPatternAndAllowedMethodsContains(path, method).stream()
-                .map(resourceMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public boolean existsById(Long id) {
         return resourceJpaRepository.existsById(id);
+    }
+
+    @Override
+    public Optional<Resource> findByMatchingUrl(String url) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Resource> findByVersion(String version) {
+        return resourceJpaRepository.findByVersion(version).stream()
+                .map(resourceMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public boolean existsByUrlPattern(String urlPattern) {
+        return resourceJpaRepository.existsByUrlPattern(urlPattern);
     }
 }

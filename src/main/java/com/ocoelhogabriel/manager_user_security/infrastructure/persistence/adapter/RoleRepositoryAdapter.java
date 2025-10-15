@@ -2,9 +2,8 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.adap
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
 import com.ocoelhogabriel.manager_user_security.domain.repository.RoleRepository;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.RoleMapper;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.RoleJpaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.RoleMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +17,6 @@ public class RoleRepositoryAdapter implements RoleRepository {
     private final RoleJpaRepository roleJpaRepository;
     private final RoleMapper roleMapper;
 
-    @Autowired
     public RoleRepositoryAdapter(RoleJpaRepository roleJpaRepository, RoleMapper roleMapper) {
         this.roleJpaRepository = roleJpaRepository;
         this.roleMapper = roleMapper;
@@ -26,7 +24,7 @@ public class RoleRepositoryAdapter implements RoleRepository {
 
     @Override
     public Role save(Role role) {
-        var entity = roleMapper.toEntity(role);
+        var entity = roleMapper.toPersistenceEntity(role);
         var savedEntity = roleJpaRepository.save(entity);
         return roleMapper.toDomain(savedEntity);
     }
@@ -45,7 +43,12 @@ public class RoleRepositoryAdapter implements RoleRepository {
     public List<Role> findAll() {
         return roleJpaRepository.findAll().stream()
                 .map(roleMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Override
+    public void delete(Role role) {
+        roleJpaRepository.delete(roleMapper.toPersistenceEntity(role));
     }
 
     @Override
@@ -67,12 +70,12 @@ public class RoleRepositoryAdapter implements RoleRepository {
     public List<Role> findByActive(boolean active) {
         return roleJpaRepository.findByActive(active).stream()
                 .map(roleMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public Set<Role> findByUserId(Long userId) {
-        return roleJpaRepository.findByUsers_Id(userId).stream()
+        return roleJpaRepository.findByUsersId(userId).stream()
                 .map(roleMapper::toDomain)
                 .collect(Collectors.toSet());
     }

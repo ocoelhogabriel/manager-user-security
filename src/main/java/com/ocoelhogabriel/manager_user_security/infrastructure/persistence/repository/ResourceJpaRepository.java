@@ -48,4 +48,26 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, Lon
      * @return true if a resource with the URL pattern exists, false otherwise
      */
     boolean existsByUrlPattern(String urlPattern);
+
+    /**
+     * Finds resources that match a given URL and HTTP method.
+     * This method should implement URL pattern matching logic to find all resources
+     * whose URL patterns match the given URL.
+     *
+     * @param url the URL to match against resource patterns
+     * @param method the HTTP method to match
+     * @return a list of matching resources
+     */
+    @Query("SELECT r FROM ResourceEntity r WHERE :url LIKE r.urlPattern AND :method MEMBER OF r.allowedMethods")
+    List<ResourceEntity> findMatchingResources(@Param("url") String url, @Param("method") String method);
+
+    /**
+     * Finds a resource by URL pattern and checks if the method is contained in its allowed methods.
+     *
+     * @param urlPattern the URL pattern of the resource
+     * @param method the HTTP method
+     * @return a list of resources matching the criteria
+     */
+    @Query("SELECT r FROM ResourceEntity r WHERE r.urlPattern = :urlPattern AND :method MEMBER OF r.allowedMethods")
+    List<ResourceEntity> findByUrlPatternAndAllowedMethodsContains(@Param("urlPattern") String urlPattern, @Param("method") String method);
 }

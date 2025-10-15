@@ -21,16 +21,16 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final JwtManager jwtManager;
     private final List<String> excludedPaths;
 
     /**
      * Constructor for JwtAuthenticationFilter.
      * 
-     * @param jwtService the JWT service
+     * @param jwtManager the JWT manager
      */
-    public JwtAuthenticationFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
+    public JwtAuthenticationFilter(JwtManager jwtManager) {
+        this.jwtManager = jwtManager;
         this.excludedPaths = Arrays.asList(
                 SecurityConstants.AUTH_WHITELIST
         );
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         if (token != null) {
             try {
-                Authentication authentication = jwtService.getAuthentication(token);
+                Authentication authentication = jwtManager.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();

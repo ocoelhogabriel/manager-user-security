@@ -1,132 +1,80 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
-import org.springframework.stereotype.Component;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.ocoelhogabriel.manager_user_security.domain.entity.Resource;
+import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.ResourceEntity;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.CreateResourceRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.ResourceResponse;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.resource.UpdateResourceRequest;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Mapper for Resource entities and DTOs.
+ * Consolidated Mapper for Resource entity using MapStruct.
+ * Handles conversions between Domain, DTOs, and Persistence entities.
  */
-@Component
-public class ResourceMapper {
+@Mapper(componentModel = "spring")
+public interface ResourceMapper {
 
-    /**
-     * Maps a Resource entity to ResourceResponse DTO.
-     *
-     * @param resource the Resource entity
-     * @return the ResourceResponse DTO
-     */
-    public ResourceResponse toResponse(Resource resource) {
-        if (resource == null) {
-            return null;
-        }
+    // --- DTO -> Domain ---
+    @Mapping(source = "path", target = "urlPattern")
+    @Mapping(source = "method", target = "allowedMethods", qualifiedByName = "stringToSet")
+    @Mapping(target = "id", ignore = true)
+    Resource toDomain(CreateResourceRequest request);
 
-        ResourceResponse response = new ResourceResponse(
-                resource.getId(),
-                resource.getName(),
-                resource.getUrlPattern(),
-                resource.getDescription(),
-                resource.getAllowedMethods().isEmpty() ? null : resource.getAllowedMethods().iterator().next()
-        );
-        
-        return response;
+    @Mapping(source = "path", target = "urlPattern")
+    @Mapping(source = "method", target = "allowedMethods", qualifiedByName = "stringToSet")
+    Resource toDomain(UpdateResourceRequest request);
+
+    // --- Domain -> DTO ---
+    @Mapping(source = "urlPattern", target = "path")
+    @Mapping(source = "allowedMethods", target = "method", qualifiedByName = "setToString")
+    ResourceResponse toResponse(Resource domain);
+
+    List<ResourceResponse> toResponseList(List<Resource> domains);
+
+    // --- Persistence -> Domain ---
+    @Mapping(source = "urlPattern", target = "urlPattern")
+    @Mapping(source = "allowedMethods", target = "allowedMethods", qualifiedByName = "commaSeparatedStringToSet")
+    Resource toDomain(ResourceEntity entity);
+
+    List<Resource> toDomainList(List<ResourceEntity> entities);
+
+    // --- Domain -> Persistence ---
+    @Mapping(source = "urlPattern", target = "urlPattern")
+    @Mapping(source = "allowedMethods", target = "allowedMethods", qualifiedByName = "setTocommaSeparatedString")
+    ResourceEntity toPersistenceEntity(Resource domain);
+
+    // --- Helper Methods ---
+    @Named("stringToSet")
+    default Set<String> stringToSet(String method) {
+        return method == null || method.isBlank() ? Collections.emptySet() : Set.of(method);
     }
 
-    /**
-     * Maps a CreateResourceRequest DTO to Resource entity.
-     *
-     * @param request the CreateResourceRequest DTO
-     * @return the Resource entity
-     */
-    public Resource toEntity(CreateResourceRequest request) {
-        if (request == null) {
-            return null;
-        }
-
-        // Create a set of allowed methods
-        Set<String> allowedMethods = new HashSet<>();
-        if (request.getMethod() != null && !request.getMethod().isEmpty()) {
-            allowedMethods.add(request.getMethod());
-        }
-
-        // Create a new Resource using constructor with values from request
-        Resource resource = new Resource(
-            null,  // ID will be assigned by the database
-            request.getName(),
-            request.getDescription(),
-            request.getPath(),
-            "v1",  // Default version value
-            allowedMethods
-        );
-        
-        return resource;
+    @Named("setToString")
+    default String setToFirstString(Set<String> methods) {
+        return methods == null || methods.isEmpty() ? null : methods.iterator().next();
     }
 
-    /**
-     * Maps an UpdateResourceRequest DTO to Resource entity.
-     *
-     * @param id the ID of the resource
-     * @param request the UpdateResourceRequest DTO
-     * @return the Resource entity
-     */
-    public Resource toEntity(Long id, UpdateResourceRequest request) {
-        if (request == null) {
+    @Named("commaSeparatedStringToSet")
+    default Set<String> commaSeparatedStringToSet(String methods) {
+        if (methods == null || methods.isBlank()) {
+            return Collections.emptySet();
+        }
+        return Arrays.stream(methods.split(",")).map(String::trim).collect(Collectors.toSet());
+    }
+
+    @Named("setTocommaSeparatedString")
+    default String setTocommaSeparatedString(Set<String> methods) {
+        if (methods == null || methods.isEmpty()) {
             return null;
         }
-
-        // Create a set of allowed methods
-        Set<String> allowedMethods = new HashSet<>();
-        if (request.getMethod() != null && !request.getMethod().isEmpty()) {
-            allowedMethods.add(request.getMethod());
-        }
-
-        // Create a Resource with the existing ID and updated values
-        Resource resource = new Resource(
-            id,
-            request.getName(),
-            request.getDescription(),
-            request.getPath(),
-            "v1",  // Default version value
-            allowedMethods
-        );
-
-        return resource;
-    }
-    
-    /**
-     * Updates an existing Resource entity with values from UpdateResourceRequest DTO.
-     *
-     * @param request the UpdateResourceRequest DTO with new values
-     * @param existingResource the existing Resource entity to update
-     * @return the updated Resource entity
-     */
-    public Resource updateEntity(UpdateResourceRequest request, Resource existingResource) {
-        if (request == null || existingResource == null) {
-            return existingResource;
-        }
-        
-        // Update the fields from the request
-        existingResource.setName(request.getName());
-        existingResource.setDescription(request.getDescription());
-        existingResource.setUrlPattern(request.getPath());
-        
-        // Update allowed methods
-        if (request.getMethod() != null && !request.getMethod().isEmpty()) {
-            // First remove all existing methods by getting a copy of the current methods
-            Set<String> currentMethods = new HashSet<>(existingResource.getAllowedMethods());
-            for (String method : currentMethods) {
-                existingResource.removeAllowedMethod(method);
-            }
-            
-            // Add the new method
-            existingResource.addAllowedMethod(request.getMethod());
-        }
-        
-        return existingResource;
+        return String.join(",", methods);
     }
 }

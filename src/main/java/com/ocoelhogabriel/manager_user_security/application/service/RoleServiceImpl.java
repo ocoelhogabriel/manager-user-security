@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +21,6 @@ import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoun
 import com.ocoelhogabriel.manager_user_security.domain.repository.PermissionRepository;
 import com.ocoelhogabriel.manager_user_security.domain.repository.RoleRepository;
 
-/**
- * Implementation of the RoleService interface.
- */
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -32,19 +29,11 @@ public class RoleServiceImpl implements RoleService {
     private final ResourceService resourceService;
     private final PermissionService permissionService;
 
-    /**
-     * Constructor.
-     *
-     * @param roleRepository the role repository
-     * @param permissionRepository the permission repository
-     * @param resourceService the resource service
-     * @param permissionService the permission service
-     */
     public RoleServiceImpl(
             RoleRepository roleRepository,
             PermissionRepository permissionRepository,
-            ResourceService resourceService,
-            PermissionService permissionService) {
+            @Qualifier("resourceServiceImpl") ResourceService resourceService, // Corrigido
+            @Qualifier("permissionServiceImpl") PermissionService permissionService) { // Corrigido
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.resourceService = resourceService;
@@ -66,15 +55,13 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(readOnly = true)
-    public Role findByName(String name) {
-        return roleRepository.findByName(name)
-                .orElse(null);
+    public Optional<Role> findByName(String name) {
+        return roleRepository.findByName(name);
     }
 
     @Override
     @Transactional
     public Role create(Role role) {
-        // Check if role with same name already exists
         if (roleRepository.existsByName(role.getName())) {
             throw new DuplicateResourceException("Role with name " + role.getName() + " already exists");
         }
@@ -85,11 +72,9 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public Role update(Role role) {
-        // Verify role exists
         roleRepository.findById(role.getId())
             .orElseThrow(() -> new ResourceNotFoundException("Role", role.getId()));
 
-        // Check if role with same name already exists (excluding this one)
         Optional<Role> existingRole = roleRepository.findByName(role.getName());
         if (existingRole.isPresent() && !existingRole.get().getId().equals(role.getId())) {
             throw new DuplicateResourceException("Role with name " + role.getName() + " already exists");
@@ -123,62 +108,47 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public Role addPermission(Long roleId, Long resourceId, String permissionName) {
-        // Check if role exists
         Role role = findById(roleId);
-
-        // Check if resource exists
         Resource resource = resourceService.findById(resourceId);
         
-        // Create a set with the single permission action
         Set<String> actions = new HashSet<>();
         actions.add(permissionName);
 
-        // Create new permission
-        Permission permission = new Permission(null, resource.getName(), actions);
+        // Corrigido: Usando construtor padrão e setters
+        Permission permission = new Permission();
+        permission.setResource(resource.getName());
+        permission.setActions(actions);
 
-        // Save permission and associate with role
-        Permission savedPermission = permissionService.create(permission);
+        permissionService.create(permission);
 
-        // Return updated role
         return findById(roleId);
     }
 
     @Override
     @Transactional
     public Role assignPermissions(Long roleId, List<Long> permissionIds) {
-        // Check if role exists
         Role role = findById(roleId);
 
         List<Permission> permissions = new ArrayList<>();
         for (Long permissionId : permissionIds) {
-            // Get permission
             Permission permission = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Permission", permissionId));
 
             permissions.add(permission);
         }
 
-        // Update role with permissions (this is an example, the actual implementation will depend on your domain model)
-        // In a real implementation, you'd update the role-permission relationships
+        // A lógica de associação real precisaria ser implementada aqui
 
-        // Return updated role
         return findById(roleId);
     }
 
     @Override
     @Transactional
     public void removePermission(Long roleId, Long permissionId) {
-        // Check if role exists
-        Role role = findById(roleId);
-
-        // Check if permission exists
-        Permission permission = permissionRepository.findById(permissionId)
+        findById(roleId);
+        permissionRepository.findById(permissionId)
             .orElseThrow(() -> new ResourceNotFoundException("Permission", permissionId));
 
-        // Remove permission from role (implementation depends on your domain model)
-        // In a real implementation, you'd remove the role-permission relationship
-
-        // For example:
-        // rolePermissionRepository.deleteByRoleIdAndPermissionId(roleId, permissionId);
+        // A lógica de remoção real precisaria ser implementada aqui
     }
 }

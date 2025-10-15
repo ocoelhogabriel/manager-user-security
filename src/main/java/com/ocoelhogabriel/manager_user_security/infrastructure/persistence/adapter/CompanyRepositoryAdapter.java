@@ -3,14 +3,12 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.adap
 import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
 import com.ocoelhogabriel.manager_user_security.domain.repository.CompanyRepository;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.CompanyEntity;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.CompanyMapper;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.CompanyJpaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.CompanyMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class CompanyRepositoryAdapter implements CompanyRepository {
@@ -18,7 +16,6 @@ public class CompanyRepositoryAdapter implements CompanyRepository {
     private final CompanyJpaRepository companyJpaRepository;
     private final CompanyMapper companyMapper;
 
-    @Autowired
     public CompanyRepositoryAdapter(CompanyJpaRepository companyJpaRepository, CompanyMapper companyMapper) {
         this.companyJpaRepository = companyJpaRepository;
         this.companyMapper = companyMapper;
@@ -26,7 +23,7 @@ public class CompanyRepositoryAdapter implements CompanyRepository {
 
     @Override
     public Company save(Company company) {
-        CompanyEntity companyEntity = companyMapper.toEntity(company);
+        CompanyEntity companyEntity = companyMapper.toPersistenceEntity(company);
         CompanyEntity savedEntity = companyJpaRepository.save(companyEntity);
         return companyMapper.toDomain(savedEntity);
     }
@@ -45,7 +42,7 @@ public class CompanyRepositoryAdapter implements CompanyRepository {
     public List<Company> findAll() {
         return companyJpaRepository.findAll().stream()
                 .map(companyMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

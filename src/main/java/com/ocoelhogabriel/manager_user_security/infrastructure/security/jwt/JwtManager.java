@@ -19,19 +19,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Centralized service for all JWT-related operations, including creation, validation, and refreshing tokens.
- */
 @Component
-public class JwtService {
+public class JwtManager {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     private static final String TOKEN_ISSUER = "user-security-api";
     private static final String ROLES_CLAIM = "roles";
     private static final String USER_ID_CLAIM = "userId";
@@ -44,20 +40,15 @@ public class JwtService {
 
     private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtService(UserDetailsServiceImpl userDetailsService) {
+    public JwtManager(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
-    /**
-     * Generates a JWT token for a user, including detailed claims.
-     *
-     * @param user the user for whom to generate the token
-     * @return token details containing the token and expiration information
-     */
     public TokenDetails generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            Instant expirationInstant = calculateExpirationTime();
+            Instant now = Instant.now();
+            Instant expirationInstant = now.plusSeconds(expirationTimeInMinutes * 60);
 
             String roles = user.getRoles().stream()
                     .map(Role::getName)
@@ -66,6 +57,7 @@ public class JwtService {
             String token = JWT.create()
                     .withIssuer(TOKEN_ISSUER)
                     .withSubject(user.getUsername())
+                    .withIssuedAt(Date.from(now))
                     .withExpiresAt(Date.from(expirationInstant))
                     .withClaim(ROLES_CLAIM, roles)
                     .withClaim(USER_ID_CLAIM, user.getId().toString())
@@ -74,21 +66,14 @@ public class JwtService {
             return new TokenDetails(
                     user.getUsername(),
                     token,
-                    getCurrentDateTime(),
-                    formatExpirationDate(expirationInstant)
+                    LocalDateTime.ofInstant(now, ZoneId.systemDefault()),
+                    LocalDateTime.ofInstant(expirationInstant, ZoneId.systemDefault())
             );
         } catch (JWTCreationException | IllegalArgumentException e) {
             throw new JWTCreationException("Error while generating token", e);
         }
     }
 
-    /**
-     * Validates a JWT token and returns the subject (username).
-     *
-     * @param token the token to validate
-     * @return the username from the token
-     * @throws AccessDeniedException if the token is invalid or expired
-     */
     public String validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -103,42 +88,47 @@ public class JwtService {
         }
     }
 
-    /**
-     * Creates an authentication object from a token for Spring Security context.
-     *
-     * @param token the JWT token
-     * @return an authentication object
-     */
+    public Optional<TokenDetails> refreshToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(TOKEN_ISSUER)
+                    .build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+            String username = decodedJWT.getSubject();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            User user = (User) userDetails; // Assuming UserDetailsImpl returns your domain User
+            return Optional.of(generateToken(user));
+        } catch (TokenExpiredException e) {
+            // If token is expired, we can still refresh it
+            DecodedJWT decodedJWT = JWT.decode(token);
+            String username = decodedJWT.getSubject();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            // This assumes your UserDetails implementation can be cast to your domain User
+            if (userDetails instanceof User) {
+                return Optional.of(generateToken((User) userDetails));
+            } else {
+                 // Or fetch the user from the database if the cast is not possible
+                 // This part depends on your UserDetailsServiceImpl implementation
+                 return Optional.empty(); 
+            }
+        } catch (JWTVerificationException e) {
+            return Optional.empty();
+        }
+    }
+
     public Authentication getAuthentication(String token) {
         String username = validateToken(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    /**
-     * Extracts the user ID from the token.
-     *
-     * @param token The JWT token.
-     * @return An Optional containing the user ID, or empty if not found or token is invalid.
-     */
     public Optional<String> getUserIdFromToken(String token) {
         try {
-            DecodedJWT jwt = JWT.decode(token); // Decode without verification to read claims
+            DecodedJWT jwt = JWT.decode(token);
             return Optional.ofNullable(jwt.getClaim(USER_ID_CLAIM).asString());
         } catch (JWTVerificationException e) {
             return Optional.empty();
         }
-    }
-
-    private Instant calculateExpirationTime() {
-        return Instant.now().plusSeconds(expirationTimeInMinutes * 60);
-    }
-
-    private String getCurrentDateTime() {
-        return DATE_FORMATTER.format(Instant.now().atZone(ZoneId.systemDefault()));
-    }
-
-    private String formatExpirationDate(Instant expirationInstant) {
-        return DATE_FORMATTER.format(expirationInstant.atZone(ZoneId.systemDefault()));
     }
 }

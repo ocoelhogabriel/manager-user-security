@@ -2,6 +2,7 @@ package com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repo
 
 import com.ocoelhogabriel.manager_user_security.domain.valueobject.LoggerType;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.LoggerEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,36 +14,44 @@ import java.util.List;
  */
 @Repository
 public interface LoggerJpaRepository extends JpaRepository<LoggerEntity, Long> {
-    
+
     /**
      * Find all logger entries by type
-     * 
+     *
      * @param type The logger type to search for
      * @return A list of logger entries with the specified type
      */
     List<LoggerEntity> findByType(LoggerType type);
-    
+
     /**
      * Find all logger entries by serial number
-     * 
+     *
      * @param serialNumber The serial number to search for
      * @return A list of logger entries with the specified serial number
      */
     List<LoggerEntity> findBySerialNumber(String serialNumber);
-    
+
     /**
      * Find all logger entries within a time range
-     * 
+     *
      * @param startTime The start time (inclusive)
-     * @param endTime The end time (inclusive)
+     * @param endTime   The end time (inclusive)
      * @return A list of logger entries within the specified time range
      */
     List<LoggerEntity> findByTimestampBetween(LocalDateTime startTime, LocalDateTime endTime);
-    
+
     /**
      * Find latest log entries ordered by timestamp descending
      *
+     * @param pageable Pagination information to limit results
      * @return A list of the latest log entries
+     */
+    List<LoggerEntity> findAllByOrderByTimestampDesc(Pageable pageable);
+
+    /**
+     * Find the latest 100 log entries ordered by timestamp descending
+     *
+     * @return A list of the latest 100 log entries
      */
     List<LoggerEntity> findTop100ByOrderByTimestampDesc();
 }

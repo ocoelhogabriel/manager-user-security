@@ -112,5 +112,5 @@ public interface UserService {
      */
     void deleteUser(Long id);
 
-    User findByIdWithRoles(Long userId);
+    Optional<User> findByIdWithRoles(Long userId);
 }

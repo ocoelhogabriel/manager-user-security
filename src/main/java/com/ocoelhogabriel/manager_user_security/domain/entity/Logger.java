@@ -11,12 +11,21 @@ import java.util.Objects;
  */
 public class Logger {
     
-    private Long id;
+    private final Long id;
     private LocalDateTime timestamp;
-    private String serialNumber;
-    private LoggerType type;
-    private String message;
+    private final String serialNumber;
+    private final LoggerType type;
+    private final String message;
     
+    // Public no-args constructor for MapStruct
+    public Logger() {
+        this.id = null;
+        this.timestamp = null;
+        this.serialNumber = null;
+        this.type = null;
+        this.message = null;
+    }
+
     // Private constructor for builder pattern
     private Logger(Builder builder) {
         this.id = builder.id;
@@ -118,5 +127,9 @@ public class Logger {
                 ", type=" + type +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        // setter para MapStruct
     }
 }

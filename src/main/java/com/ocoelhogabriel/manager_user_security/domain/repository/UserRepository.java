@@ -41,5 +41,5 @@ public interface UserRepository extends Repository<User, Long> {
      */
     boolean existsByEmail(String email);
 
-    User findByIdWithRoles(Long userId);
+    Optional<User> findByIdWithRoles(Long userId);
 }

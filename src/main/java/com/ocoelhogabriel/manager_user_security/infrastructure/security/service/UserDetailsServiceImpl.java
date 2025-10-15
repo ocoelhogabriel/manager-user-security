@@ -61,7 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // Add permission-based authorities
         user.getRoles().forEach(role -> {
             role.getPermissions().forEach(permission -> {
-                String authority = permission.getResource() + ":" + permission.getAction();
+                String authority = permission.getResource() + ":" + permission.getActions();
                 authorities.add(new SimpleGrantedAuthority(authority));
             });
         });

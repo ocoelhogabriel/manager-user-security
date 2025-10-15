@@ -1,19 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.controller.resource;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+package com.ocoelhogabriel.manager_user_security.interfaces.controllers;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.exception.DomainException;
@@ -22,11 +7,16 @@ import com.ocoelhogabriel.manager_user_security.interfaces.dto.CreateUserRequest
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.UpdatePasswordRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.UpdateUserRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.UserResponse;
-
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * REST controller for user management.
@@ -37,9 +27,14 @@ import jakarta.validation.Valid;
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    
+    private final UserService userService;
+    private final UserMapper userMapper;
+
+    public UserController(UserService userService, UserMapper userMapper) {
+        this.userService = userService;
+        this.userMapper = userMapper;
+    }
+
     /**
      * Creates a new user.
      *
@@ -50,13 +45,13 @@ public class UserController {
     @Operation(summary = "Create user", description = "Creates a new user")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         User user = userService.createUser(
-                request.getUsername(), 
-                request.getEmail(), 
+                request.getUsername(),
+                request.getEmail(),
                 request.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(mapUserToResponse(user));
+                .body(userMapper.toResponse(user));
     }
-    
+
     /**
      * Gets a user by ID.
      *
@@ -67,10 +62,11 @@ public class UserController {
     @Operation(summary = "Get user", description = "Gets a user by ID")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return userService.findById(id)
-                .map(user -> ResponseEntity.ok(mapUserToResponse(user)))
+                .map(userMapper::toResponse)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     /**
      * Gets all users.
      *
@@ -80,15 +76,15 @@ public class UserController {
     @Operation(summary = "Get all users", description = "Gets all users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.findAll().stream()
-                .map(this::mapUserToResponse)
-                .collect(Collectors.toList());
+                .map(userMapper::toResponse)
+                .toList();
         return ResponseEntity.ok(users);
     }
-    
+
     /**
      * Updates a user.
      *
-     * @param id the user ID
+     * @param id      the user ID
      * @param request the user update request
      * @return the updated user
      */
@@ -97,21 +93,21 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
-        
+
         return userService.findById(id)
                 .map(user -> {
                     user.setUsername(request.getUsername());
                     user.setEmail(request.getEmail());
                     User updatedUser = userService.updateUser(user);
-                    return ResponseEntity.ok(mapUserToResponse(updatedUser));
+                    return ResponseEntity.ok(userMapper.toResponse(updatedUser));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     /**
      * Updates a user's password.
      *
-     * @param id the user ID
+     * @param id      the user ID
      * @param request the password update request
      * @return the updated user
      */
@@ -120,15 +116,15 @@ public class UserController {
     public ResponseEntity<UserResponse> updatePassword(
             @PathVariable Long id,
             @Valid @RequestBody UpdatePasswordRequest request) {
-        
+
         return userService.findById(id)
                 .map(user -> {
                     User updatedUser = userService.updatePassword(user, request.getPassword());
-                    return ResponseEntity.ok(mapUserToResponse(updatedUser));
+                    return ResponseEntity.ok(userMapper.toResponse(updatedUser));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     /**
      * Activates a user.
      *
@@ -141,11 +137,11 @@ public class UserController {
         return userService.findById(id)
                 .map(user -> {
                     User updatedUser = userService.activateUser(user);
-                    return ResponseEntity.ok(mapUserToResponse(updatedUser));
+                    return ResponseEntity.ok(userMapper.toResponse(updatedUser));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     /**
      * Deactivates a user.
      *
@@ -158,11 +154,11 @@ public class UserController {
         return userService.findById(id)
                 .map(user -> {
                     User updatedUser = userService.deactivateUser(user);
-                    return ResponseEntity.ok(mapUserToResponse(updatedUser));
+                    return ResponseEntity.ok(userMapper.toResponse(updatedUser));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     /**
      * Deletes a user.
      *
@@ -178,26 +174,5 @@ public class UserController {
         } catch (DomainException e) {
             return ResponseEntity.notFound().build();
         }
-    }
-    
-    /**
-     * Maps a User entity to a UserResponse DTO.
-     *
-     * @param user the user entity
-     * @return the user response DTO
-     */
-    private UserResponse mapUserToResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.isActive(),
-                user.getRoles().stream()
-                    .map(role -> new UserResponse.RoleResponse(
-                            role.getId(),
-                            role.getName(),
-                            role.getDescription()))
-                    .collect(Collectors.toSet())
-        );
     }
 }

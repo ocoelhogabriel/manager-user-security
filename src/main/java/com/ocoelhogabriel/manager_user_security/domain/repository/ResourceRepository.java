@@ -63,13 +63,4 @@ public interface ResourceRepository extends Repository<Resource, Long> {
      * @return a list of matching resources
      */
     List<Resource> findMatchingResources(String url, String method);
-
-    /**
-     * Finds resources by path and method.
-     *
-     * @param path the path
-     * @param method the HTTP method
-     * @return a list of resources matching the path and method
-     */
-    List<Resource> findByPathAndMethod(String path, String method);
 }

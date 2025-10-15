@@ -160,11 +160,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByIdWithRoles(Long userId) {
-        User user = userRepository.findByIdWithRoles(userId);
-        if (user == null) {
-            throw new DomainException("User not found");
-        }
-        return user;
+    public Optional<User> findByIdWithRoles(Long userId) {
+        return userRepository.findByIdWithRoles(userId);
     }
 }

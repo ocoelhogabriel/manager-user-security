@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.controller;
+package com.ocoelhogabriel.manager_user_security.interfaces.controllers;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Coverage;
 import com.ocoelhogabriel.manager_user_security.domain.service.CoverageService;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +30,6 @@ public class CoverageController {
     private final CoverageService coverageService;
     private final CoverageMapper coverageMapper;
 
-    @Autowired
     public CoverageController(CoverageService coverageService, CoverageMapper coverageMapper) {
         this.coverageService = coverageService;
         this.coverageMapper = coverageMapper;

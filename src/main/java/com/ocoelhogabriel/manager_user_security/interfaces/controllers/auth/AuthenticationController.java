@@ -1,4 +1,4 @@
-package com.ocoelhogabriel.manager_user_security.interfaces.controller.auth;
+package com.ocoelhogabriel.manager_user_security.interfaces.controllers.auth;
 
 import com.ocoelhogabriel.manager_user_security.domain.service.AuthenticationService;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.AuthenticationRequest;

@@ -3,46 +3,28 @@ package com.ocoelhogabriel.manager_user_security.domain.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
-import java.util.Collections;
 
 /**
- * Permission domain entity representing a permission in the system.
- * Permissions are used to control access to resources.
+ * Permission domain entity. Refactored to a standard POJO for framework compatibility.
  */
 public class Permission {
-    private final Long id;
+    private Long id;
     private String resource;
-    private Set<String> actions;
+    private Set<String> actions = new HashSet<>();
 
     /**
-     * Creates a new Permission with the specified resource and action.
-     *
-     * @param resource the resource name
-     * @param action the action to be performed on the resource
+     * No-argument constructor for frameworks like JPA and MapStruct.
      */
-    public Permission(Long id, String resource, String action) {
-        this.id = id;
-        this.resource = resource;
-        this.actions = new HashSet<>();
-        this.actions.add(action);
+    public Permission() {
     }
 
-    /**
-     * Creates a Permission with an existing ID.
-     *
-     * @param id the ID of the permission
-     * @param resource the resource name
-     * @param actions the actions that can be performed on the resource
-     */
-    public Permission(Long id, String resource, Set<String> actions) {
-        this.id = id;
-        this.resource = resource;
-        this.actions = actions != null ? new HashSet<>(actions) : new HashSet<>();
-    }
-
+    // Getters and Setters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getResource() {
@@ -54,47 +36,11 @@ public class Permission {
     }
 
     public Set<String> getActions() {
-        return Collections.unmodifiableSet(actions);
+        return actions;
     }
 
-    /**
-     * Adds an action to the permission.
-     *
-     * @param action the action to add
-     * @return true if the action was added, false if it was already present
-     */
-    public boolean addAction(String action) {
-        return actions.add(action);
-    }
-
-    /**
-     * Removes an action from the permission.
-     *
-     * @param action the action to remove
-     * @return true if the action was removed, false if it was not present
-     */
-    public boolean removeAction(String action) {
-        return actions.remove(action);
-    }
-
-    /**
-     * Checks if the permission has a specific action.
-     *
-     * @param action the action to check
-     * @return true if the permission has the action, false otherwise
-     */
-    public boolean hasAction(String action) {
-        return actions.contains(action);
-    }
-
-    /**
-     * Gets the first action in the actions set or null if there are no actions.
-     * This is a convenience method for code that expects a single action.
-     *
-     * @return the first action or null if none exists
-     */
-    public String getAction() {
-        return actions.isEmpty() ? null : actions.iterator().next();
+    public void setActions(Set<String> actions) {
+        this.actions = actions != null ? new HashSet<>(actions) : new HashSet<>();
     }
 
     @Override
@@ -108,5 +54,9 @@ public class Permission {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean hasAction(String action) {
+        return actions.contains(action);
     }
 }

@@ -4,8 +4,8 @@ import com.ocoelhogabriel.manager_user_security.domain.entity.Logger;
 import com.ocoelhogabriel.manager_user_security.domain.repository.LoggerRepository;
 import com.ocoelhogabriel.manager_user_security.domain.valueobject.LoggerType;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.LoggerEntity;
-import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.mapper.LoggerMapper;
 import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.repository.LoggerJpaRepository;
+import com.ocoelhogabriel.manager_user_security.interfaces.mapper.LoggerMapper;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class LoggerRepositoryImpl implements LoggerRepository {
     
     @Override
     public Logger save(Logger logger) {
-        LoggerEntity entity = loggerMapper.toEntity(logger);
+        LoggerEntity entity = loggerMapper.toPersistenceEntity(logger);
         LoggerEntity savedEntity = loggerJpaRepository.save(entity);
         return loggerMapper.toDomain(savedEntity);
     }

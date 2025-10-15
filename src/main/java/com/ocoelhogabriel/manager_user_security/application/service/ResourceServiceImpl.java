@@ -44,8 +44,8 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional(readOnly = true)
-    public Resource findByName(String name) {
-        return resourceRepository.findByName(name).orElse(null);
+    public Optional<Resource> findByName(String name) {
+        return resourceRepository.findByName(name);
     }
 
     @Override
@@ -96,11 +96,6 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional(readOnly = true)
     public List<Resource> findMatchingResources(String url, String method) {
         return resourceRepository.findMatchingResources(url, method);
-    }
-
-    @Override
-    public List<Resource> findByPathAndMethod(String path, String method) {
-        return resourceRepository.findByPathAndMethod(path, method);
     }
 
     /**

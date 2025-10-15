@@ -16,7 +16,7 @@ public class Resource {
     private String description;
     private String urlPattern;
     private String version;
-    private Set<String> allowedMethods;
+    private final Set<String> allowedMethods;
 
     /**
      * Creates a new Resource with the specified name and URL pattern.

@@ -1,6 +1,7 @@
 package com.ocoelhogabriel.manager_user_security.infrastructure.security.authorization;
 
 import java.util.Objects;
+import java.util.Optional; // Adicionado
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,10 +19,10 @@ public class PermissionEvaluator {
 
     @Autowired
     private ResourceService resourceService;
-    
+
     @Autowired
     private RolePermissionService rolePermissionService;
-    
+
     /**
      * Checks if a role has permission to access a resource with a specific method
      *
@@ -34,19 +35,25 @@ public class PermissionEvaluator {
         // Extract resource name
         Resource resource = urlMatcher.getResource();
         String resourceName = resource.name();
-        
+
         // Validate parameters
         Objects.requireNonNull(resourceName, "Resource name cannot be null");
         Objects.requireNonNull(roleName, "Role name cannot be null");
         Objects.requireNonNull(urlMatcher, "URL matcher cannot be null");
 
         // Get resource and role entities
-        var resourceEntity = resourceService.findByName(resourceName);
+        Optional<com.ocoelhogabriel.manager_user_security.domain.entity.Resource> resourceEntityOpt = resourceService.findByName(resourceName);
+
+        if (resourceEntityOpt.isEmpty()) {
+            return false; // If resource doesn't exist in DB, no permission
+        }
+
         var roleEntity = new Role();
         roleEntity.setName(roleName);
-        
+        com.ocoelhogabriel.manager_user_security.domain.entity.Resource entity = resourceEntityOpt.get();
+        Resource resourceAuth = new Resource(entity.getName(), entity.getDescription());
         // Get permission for the role and resource
-        var permission = rolePermissionService.findByRoleAndResource(roleEntity, resourceEntity);
+        var permission = rolePermissionService.findByRoleAndResource(roleEntity, resourceAuth);
 
         // Check permission based on HTTP method
         return switch (method.toUpperCase()) {

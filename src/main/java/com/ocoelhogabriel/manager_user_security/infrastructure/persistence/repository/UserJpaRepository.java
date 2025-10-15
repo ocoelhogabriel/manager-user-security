@@ -54,5 +54,5 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
      * @return the user with eagerly fetched roles if found, null otherwise
      */
     @Query("SELECT u FROM UserEntity u LEFT JOIN FETCH u.roles WHERE u.id = :id")
-    UserEntity findByIdWithRoles(@Param("id") Long id);
+    Optional<UserEntity> findByIdWithRoles(@Param("id") Long id);
 }

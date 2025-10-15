@@ -1,60 +1,39 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.mapper;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Logger;
+import com.ocoelhogabriel.manager_user_security.infrastructure.persistence.entity.LoggerEntity;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.LoggerRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.LoggerResponse;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Mapper for converting between Logger domain entity and DTOs.
+ * Consolidated Mapper for Logger entity using MapStruct.
+ * Handles conversions between Domain, DTOs, and Persistence entities.
  */
-@Component
-public class LoggerMapper {
-    
-    /**
-     * Converts a LoggerRequest DTO to a Logger domain entity.
-     *
-     * @param request The logger request DTO
-     * @return The logger domain entity
-     */
-    public Logger toEntity(LoggerRequest request) {
-        return new Logger.Builder()
-                .withTimestamp(LocalDateTime.now())
-                .withSerialNumber(request.getSerialNumber())
-                .withType(request.getType())
-                .withMessage(request.getMessage())
-                .build();
-    }
-    
-    /**
-     * Converts a Logger domain entity to a LoggerResponse DTO.
-     *
-     * @param entity The logger domain entity
-     * @return The logger response DTO
-     */
-    public LoggerResponse toResponse(Logger entity) {
-        return new LoggerResponse(
-                entity.getId(),
-                entity.getTimestamp(),
-                entity.getSerialNumber(),
-                entity.getType(),
-                entity.getMessage()
-        );
-    }
-    
-    /**
-     * Converts a list of Logger domain entities to a list of LoggerResponse DTOs.
-     *
-     * @param entities The list of logger domain entities
-     * @return The list of logger response DTOs
-     */
-    public List<LoggerResponse> toResponseList(List<Logger> entities) {
-        return entities.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
-    }
+@Mapper(componentModel = "spring")
+public interface LoggerMapper {
+
+    // --- DTO -> Domain ---
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
+    Logger toDomain(LoggerRequest request);
+
+    // --- Domain -> DTO ---
+    LoggerResponse toResponse(Logger domain);
+
+    List<LoggerResponse> toResponseList(List<Logger> domains);
+
+    // --- Persistence -> Domain ---
+    Logger toDomain(LoggerEntity entity);
+
+    List<Logger> toDomainList(List<LoggerEntity> entities);
+
+    // --- Domain -> Persistence ---
+    LoggerEntity toPersistenceEntity(Logger domain);
+
+    List<LoggerEntity> toPersistenceEntityList(List<Logger> domains);
+
 }

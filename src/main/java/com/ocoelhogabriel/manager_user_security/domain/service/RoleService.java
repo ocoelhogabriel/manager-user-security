@@ -1,6 +1,7 @@
 package com.ocoelhogabriel.manager_user_security.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.ocoelhogabriel.manager_user_security.domain.entity.Role;
@@ -30,9 +31,9 @@ public interface RoleService {
      * Find a role by name.
      *
      * @param name the role name
-     * @return the role, if found
+     * @return an Optional containing the role, or empty if not found
      */
-    Role findByName(String name);
+    Optional<Role> findByName(String name);
 
     /**
      * Create a new role.
