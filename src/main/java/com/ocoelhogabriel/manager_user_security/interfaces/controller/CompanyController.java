@@ -1,7 +1,8 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.controller;
 
-import com.ocoelhogabriel.manager_user_security.application.usecase.CompanyUseCase;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
+import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException;
+import com.ocoelhogabriel.manager_user_security.domain.service.CompanyService;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.CompanyRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.CompanyResponse;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.CompanyUpdateRequest;
@@ -30,12 +31,12 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class CompanyController {
 
-    private final CompanyUseCase companyUseCase;
+    private final CompanyService companyService;
     private final CompanyMapper companyMapper;
 
     @Autowired
-    public CompanyController(CompanyUseCase companyUseCase, CompanyMapper companyMapper) {
-        this.companyUseCase = companyUseCase;
+    public CompanyController(CompanyService companyService, CompanyMapper companyMapper) {
+        this.companyService = companyService;
         this.companyMapper = companyMapper;
     }
 
@@ -54,7 +55,7 @@ public class CompanyController {
     )
     public ResponseEntity<CompanyResponse> createCompany(@Valid @RequestBody CompanyRequest request) {
         Company company = companyMapper.toEntity(request);
-        Company createdCompany = companyUseCase.createCompany(company);
+        Company createdCompany = companyService.registerCompany(company);
         CompanyResponse response = companyMapper.toResponse(createdCompany);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -75,7 +76,7 @@ public class CompanyController {
     )
     public ResponseEntity<CompanyResponse> updateCompany(@Valid @RequestBody CompanyUpdateRequest request) {
         Company company = companyMapper.toEntity(request);
-        Company updatedCompany = companyUseCase.updateCompany(company);
+        Company updatedCompany = companyService.updateCompany(company);
         CompanyResponse response = companyMapper.toResponse(updatedCompany);
         return ResponseEntity.ok(response);
     }
@@ -93,7 +94,7 @@ public class CompanyController {
         }
     )
     public ResponseEntity<CompanyResponse> getCompany(@PathVariable Long id) {
-        Company company = companyUseCase.getCompanyById(id);
+        Company company = companyService.getCompanyById(id);
         CompanyResponse response = companyMapper.toResponse(company);
         return ResponseEntity.ok(response);
     }
@@ -111,7 +112,8 @@ public class CompanyController {
         }
     )
     public ResponseEntity<CompanyResponse> getCompanyByCnpj(@PathVariable String cnpj) {
-        Company company = companyUseCase.getCompanyByCnpj(cnpj);
+        Company company = companyService.findByCnpj(cnpj)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with CNPJ: " + cnpj));
         CompanyResponse response = companyMapper.toResponse(company);
         return ResponseEntity.ok(response);
     }
@@ -128,7 +130,7 @@ public class CompanyController {
         }
     )
     public ResponseEntity<List<CompanyResponse>> getAllCompanies() {
-        List<Company> companies = companyUseCase.getAllCompanies();
+        List<Company> companies = companyService.findAllCompanies();
         List<CompanyResponse> responses = companyMapper.toResponseList(companies);
         return ResponseEntity.ok(responses);
     }
@@ -141,11 +143,11 @@ public class CompanyController {
         responses = {
             @ApiResponse(responseCode = "204", description = "Company deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Company not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
+            @ApiResponse(responseCode = "403", "Forbidden")
         }
     )
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
-        companyUseCase.deleteCompany(id);
+        companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();
     }
 }

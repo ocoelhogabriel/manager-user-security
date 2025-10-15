@@ -1,12 +1,11 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.controller;
 
-import com.ocoelhogabriel.manager_user_security.application.usecase.CoverageUseCase;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Coverage;
+import com.ocoelhogabriel.manager_user_security.domain.service.CoverageService;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageResponse;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.CoverageUpdateRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.mapper.CoverageMapper;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,21 +22,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST controller for managing user coverage (abrangência).
- */
 @RestController
 @RequestMapping("/api/coverages/v1")
 @Tag(name = "Coverage", description = "API for managing user access coverage (abrangência)")
 @SecurityRequirement(name = "bearerAuth")
 public class CoverageController {
 
-    private final CoverageUseCase coverageUseCase;
+    private final CoverageService coverageService;
     private final CoverageMapper coverageMapper;
 
     @Autowired
-    public CoverageController(CoverageUseCase coverageUseCase, CoverageMapper coverageMapper) {
-        this.coverageUseCase = coverageUseCase;
+    public CoverageController(CoverageService coverageService, CoverageMapper coverageMapper) {
+        this.coverageService = coverageService;
         this.coverageMapper = coverageMapper;
     }
 
@@ -54,7 +50,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<CoverageResponse> createCoverage(@Valid @RequestBody CoverageRequest request) {
-        Coverage coverage = coverageUseCase.createCoverage(
+        Coverage coverage = coverageService.createCoverage(
                 request.getUserId(),
                 request.getCompanyId(),
                 request.getPlantId(),
@@ -78,7 +74,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<CoverageResponse> getCoverage(@PathVariable Long id) {
-        Coverage coverage = coverageUseCase.getCoverageById(id);
+        Coverage coverage = coverageService.getCoverageById(id);
         CoverageResponse response = coverageMapper.toResponse(coverage);
         return ResponseEntity.ok(response);
     }
@@ -100,7 +96,7 @@ public class CoverageController {
             @PathVariable Long id,
             @Valid @RequestBody CoverageUpdateRequest request) {
         
-        Coverage coverage = coverageUseCase.updateCoverage(
+        Coverage coverage = coverageService.updateCoverage(
                 id,
                 request.getCompanyId(),
                 request.getPlantId(),
@@ -124,7 +120,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<Void> deleteCoverage(@PathVariable Long id) {
-        coverageUseCase.deleteCoverage(id);
+        coverageService.deleteCoverage(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -140,7 +136,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<List<CoverageResponse>> getCoveragesByUser(@PathVariable Long userId) {
-        List<Coverage> coverages = coverageUseCase.getCoveragesByUser(userId);
+        List<Coverage> coverages = coverageService.getCoveragesByUser(userId);
         List<CoverageResponse> responses = coverageMapper.toResponseList(coverages);
         return ResponseEntity.ok(responses);
     }
@@ -157,7 +153,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<List<CoverageResponse>> getActiveCoveragesByUser(@PathVariable Long userId) {
-        List<Coverage> coverages = coverageUseCase.getActiveCoveragesByUser(userId);
+        List<Coverage> coverages = coverageService.getActiveCoveragesByUser(userId);
         List<CoverageResponse> responses = coverageMapper.toResponseList(coverages);
         return ResponseEntity.ok(responses);
     }
@@ -174,7 +170,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<List<CoverageResponse>> getCoveragesByCompany(@PathVariable Long companyId) {
-        List<Coverage> coverages = coverageUseCase.getCoveragesByCompany(companyId);
+        List<Coverage> coverages = coverageService.getCoveragesByCompany(companyId);
         List<CoverageResponse> responses = coverageMapper.toResponseList(coverages);
         return ResponseEntity.ok(responses);
     }
@@ -191,7 +187,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<List<CoverageResponse>> getCoveragesByPlant(@PathVariable Long plantId) {
-        List<Coverage> coverages = coverageUseCase.getCoveragesByPlant(plantId);
+        List<Coverage> coverages = coverageService.getCoveragesByPlant(plantId);
         List<CoverageResponse> responses = coverageMapper.toResponseList(coverages);
         return ResponseEntity.ok(responses);
     }
@@ -221,10 +217,10 @@ public class CoverageController {
         
         if (companyId != null && plantId == null) {
             // Check company access
-            hasAccess = coverageUseCase.hasCompanyAccess(userId, companyId);
+            hasAccess = coverageService.hasCompanyAccess(userId, companyId);
         } else if (plantId != null) {
             // Check plant access
-            hasAccess = coverageUseCase.hasPlantAccess(userId, plantId);
+            hasAccess = coverageService.hasPlantAccess(userId, plantId);
         } else {
             // Invalid parameters
             return ResponseEntity.badRequest().build();
@@ -245,7 +241,7 @@ public class CoverageController {
         }
     )
     public ResponseEntity<List<CoverageResponse>> getAllCoverages() {
-        List<Coverage> coverages = coverageUseCase.getAllCoverages();
+        List<Coverage> coverages = coverageService.getAllCoverages();
         List<CoverageResponse> responses = coverageMapper.toResponseList(coverages);
         return ResponseEntity.ok(responses);
     }

@@ -1,44 +1,31 @@
 package com.ocoelhogabriel.manager_user_security.interfaces.controller.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ocoelhogabriel.manager_user_security.application.usecase.AuthenticationUseCase;
+import com.ocoelhogabriel.manager_user_security.domain.service.AuthenticationService;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.AuthenticationRequest;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.AuthenticationResponse;
 import com.ocoelhogabriel.manager_user_security.interfaces.dto.TokenValidationResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * REST controller for authentication operations.
- */
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "API for authentication and token management")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationUseCase authenticationUseCase;
+    private final AuthenticationService authenticationService;
 
-    /**
-     * Authenticates a user with username and password.
-     *
-     * @param request the authentication request
-     * @return the authentication response with the JWT token
-     */
+    @Autowired
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
     @PostMapping("/v1/login")
     @Operation(
         summary = "Authenticate user",
@@ -46,17 +33,11 @@ public class AuthenticationController {
     )
     public ResponseEntity<AuthenticationResponse> authenticate(
             @Valid @RequestBody AuthenticationRequest request) {
-        AuthenticationResponse response = authenticationUseCase.authenticate(
+        AuthenticationResponse response = authenticationService.authenticate(
                 request.getUsername(), request.getPassword());
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Validates a JWT token.
-     *
-     * @param token the token to validate
-     * @return the validation response
-     */
     @GetMapping("/v1/validate")
     @Operation(
         summary = "Validate token",
@@ -64,7 +45,7 @@ public class AuthenticationController {
     )
     public ResponseEntity<TokenValidationResponse> validateToken(@RequestParam String token) {
         try {
-            TokenValidationResponse response = authenticationUseCase.validateToken(token);
+            TokenValidationResponse response = authenticationService.validateToken(token);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -72,12 +53,6 @@ public class AuthenticationController {
         }
     }
 
-    /**
-     * Refreshes a JWT token.
-     *
-     * @param token the token to refresh
-     * @return the authentication response with the new token
-     */
     @GetMapping("/v1/refresh")
     @Operation(
         summary = "Refresh token",
@@ -85,18 +60,13 @@ public class AuthenticationController {
     )
     public ResponseEntity<AuthenticationResponse> refreshToken(@RequestParam String token) {
         try {
-            AuthenticationResponse response = authenticationUseCase.refreshToken(token);
+            AuthenticationResponse response = authenticationService.refreshToken(token);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
-    /**
-     * Gets the current authenticated user information.
-     *
-     * @return the current user information
-     */
     @GetMapping("/v1/me")
     @Operation(
         summary = "Get current user",
@@ -104,6 +74,6 @@ public class AuthenticationController {
         security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<Object> getCurrentUser() {
-        return ResponseEntity.ok(authenticationUseCase.getCurrentUser());
+        return ResponseEntity.ok(authenticationService.getCurrentUser());
     }
 }

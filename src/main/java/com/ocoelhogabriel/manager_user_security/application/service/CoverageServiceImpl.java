@@ -1,13 +1,15 @@
 package com.ocoelhogabriel.manager_user_security.application.service;
 
+import com.ocoelhogabriel.manager_user_security.domain.entity.Company;
 import com.ocoelhogabriel.manager_user_security.domain.entity.Coverage;
+import com.ocoelhogabriel.manager_user_security.domain.entity.Plant;
+import com.ocoelhogabriel.manager_user_security.domain.entity.User;
 import com.ocoelhogabriel.manager_user_security.domain.exception.ResourceNotFoundException;
-import com.ocoelhogabriel.manager_user_security.domain.repository.CoverageRepository;
-import com.ocoelhogabriel.manager_user_security.domain.repository.UserRepository;
 import com.ocoelhogabriel.manager_user_security.domain.repository.CompanyRepository;
+import com.ocoelhogabriel.manager_user_security.domain.repository.CoverageRepository;
 import com.ocoelhogabriel.manager_user_security.domain.repository.PlantRepository;
+import com.ocoelhogabriel.manager_user_security.domain.repository.UserRepository;
 import com.ocoelhogabriel.manager_user_security.domain.service.CoverageService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Implementation of the CoverageService interface.
- */
 @Service
 public class CoverageServiceImpl implements CoverageService {
 
@@ -43,11 +42,24 @@ public class CoverageServiceImpl implements CoverageService {
 
     @Override
     @Transactional
-    public Coverage createCoverage(Coverage coverage) {
-        logger.debug("Creating new coverage for user ID: {}, company ID: {}", 
-                coverage.getUser().getId(), coverage.getCompany().getId());
-        
-        validateCoverage(coverage);
+    public Coverage createCoverage(Long userId, Long companyId, Long plantId, String description) {
+        logger.info("Creating coverage for user ID: {}, company ID: {}, plant ID: {}", userId, companyId, plantId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with ID: " + companyId));
+        Plant plant = plantId != null ? plantRepository.findById(plantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found with ID: " + plantId)) : null;
+
+        Coverage coverage = Coverage.builder()
+                .user(user)
+                .company(company)
+                .plant(plant)
+                .description(description)
+                .active(true)
+                .build();
+
         return coverageRepository.save(coverage);
     }
 
@@ -55,28 +67,32 @@ public class CoverageServiceImpl implements CoverageService {
     @Transactional(readOnly = true)
     public Coverage getCoverageById(Long id) {
         logger.debug("Getting coverage with ID: {}", id);
-        
         return coverageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Coverage not found with ID: " + id));
     }
 
     @Override
     @Transactional
-    public Coverage updateCoverage(Long id, Coverage coverage) {
-        logger.debug("Updating coverage with ID: {}", id);
-        
+    public Coverage updateCoverage(Long id, Long companyId, Long plantId, String description, Boolean active) {
+        logger.info("Updating coverage ID: {}", id);
+
         Coverage existingCoverage = getCoverageById(id);
-        validateCoverage(coverage);
-        
+
+        Company company = companyId != null ? companyRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with ID: " + companyId)) : existingCoverage.getCompany();
+
+        Plant plant = plantId != null ? plantRepository.findById(plantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plant not found with ID: " + plantId)) : existingCoverage.getPlant();
+
         Coverage updatedCoverage = Coverage.builder()
-                .id(existingCoverage.getId())
-                .user(coverage.getUser())
-                .company(coverage.getCompany())
-                .plant(coverage.getPlant())
-                .description(coverage.getDescription())
-                .active(coverage.isActive())
+                .id(id)
+                .user(existingCoverage.getUser())
+                .company(company)
+                .plant(plant)
+                .description(description != null ? description : existingCoverage.getDescription())
+                .active(active != null ? active : existingCoverage.isActive())
                 .build();
-        
+
         return coverageRepository.save(updatedCoverage);
     }
 
@@ -84,47 +100,39 @@ public class CoverageServiceImpl implements CoverageService {
     @Transactional
     public void deleteCoverage(Long id) {
         logger.debug("Deleting coverage with ID: {}", id);
-        
         if (!coverageRepository.findById(id).isPresent()) {
             throw new ResourceNotFoundException("Coverage not found with ID: " + id);
         }
-        
         coverageRepository.deleteById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Coverage> getCoveragesByUserId(Long userId) {
+    public List<Coverage> getCoveragesByUser(Long userId) {
         logger.debug("Getting coverages for user ID: {}", userId);
-        
         if (!userRepository.findById(userId).isPresent()) {
             throw new ResourceNotFoundException("User not found with ID: " + userId);
         }
-        
         return coverageRepository.findByUserId(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Coverage> getCoveragesByCompanyId(Long companyId) {
+    public List<Coverage> getCoveragesByCompany(Long companyId) {
         logger.debug("Getting coverages for company ID: {}", companyId);
-        
         if (!companyRepository.findById(companyId).isPresent()) {
             throw new ResourceNotFoundException("Company not found with ID: " + companyId);
         }
-        
         return coverageRepository.findByCompanyId(companyId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Coverage> getCoveragesByPlantId(Long plantId) {
+    public List<Coverage> getCoveragesByPlant(Long plantId) {
         logger.debug("Getting coverages for plant ID: {}", plantId);
-        
         if (!plantRepository.findById(plantId).isPresent()) {
             throw new ResourceNotFoundException("Plant not found with ID: " + plantId);
         }
-        
         return coverageRepository.findByPlantId(plantId);
     }
 
@@ -132,7 +140,6 @@ public class CoverageServiceImpl implements CoverageService {
     @Transactional(readOnly = true)
     public boolean hasCompanyAccess(Long userId, Long companyId) {
         logger.debug("Checking if user ID: {} has access to company ID: {}", userId, companyId);
-        
         List<Coverage> coverages = coverageRepository.findByUserIdAndCompanyId(userId, companyId);
         return coverages.stream().anyMatch(Coverage::isActive);
     }
@@ -141,7 +148,6 @@ public class CoverageServiceImpl implements CoverageService {
     @Transactional(readOnly = true)
     public boolean hasPlantAccess(Long userId, Long plantId) {
         logger.debug("Checking if user ID: {} has access to plant ID: {}", userId, plantId);
-        
         List<Coverage> coverages = coverageRepository.findByPlantId(plantId);
         return coverages.stream()
                 .filter(c -> c.getUser().getId().equals(userId))
@@ -157,35 +163,11 @@ public class CoverageServiceImpl implements CoverageService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Coverage> getActiveCoveragesByUserId(Long userId) {
+    public List<Coverage> getActiveCoveragesByUser(Long userId) {
         logger.debug("Getting active coverages for user ID: {}", userId);
-        
         if (!userRepository.findById(userId).isPresent()) {
             throw new ResourceNotFoundException("User not found with ID: " + userId);
         }
-        
         return coverageRepository.findActiveByUserId(userId);
-    }
-    
-    private void validateCoverage(Coverage coverage) {
-        // Validate user
-        Long userId = coverage.getUser().getId();
-        if (userId == null || !userRepository.findById(userId).isPresent()) {
-            throw new IllegalArgumentException("Invalid user ID: " + userId);
-        }
-        
-        // Validate company
-        Long companyId = coverage.getCompany().getId();
-        if (companyId == null || !companyRepository.findById(companyId).isPresent()) {
-            throw new IllegalArgumentException("Invalid company ID: " + companyId);
-        }
-        
-        // Validate plant if present
-        if (coverage.getPlant() != null && coverage.getPlant().getId() != null) {
-            Long plantId = coverage.getPlant().getId();
-            if (!plantRepository.findById(plantId).isPresent()) {
-                throw new IllegalArgumentException("Invalid plant ID: " + plantId);
-            }
-        }
     }
 }
