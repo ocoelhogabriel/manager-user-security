@@ -79,7 +79,7 @@ A nova implementação segue a estrutura de Clean Architecture com as seguintes 
 ./mvnw clean install
 
 # Execute o projeto
-java -jar target/siloapi.war
+java -jar target/manager_user_security.war
 ```
 
 ### Nova Configuração (Migração em Andamento)
@@ -89,7 +89,7 @@ java -jar target/siloapi.war
 ./mvnw clean install
 
 # Execute com o perfil de configuração clean
-java -jar target/siloapi.war --spring.profiles.active=clean
+java -jar target/manager_user_security.war --spring.profiles.active=clean
 ```
 
 ## Contato e Suporte
